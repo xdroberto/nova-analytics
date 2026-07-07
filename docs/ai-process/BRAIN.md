@@ -4,13 +4,25 @@
 > every significant action, (4) never reconstruct state from chat memory.
 
 ## Current position
-- Phase: 1 (Auth: spike → stabilize) — Tasks 6–11 DONE; Task 12 in flight (adversarial review
-  findings FIXED, awaiting CI on PR #1, then merge to develop).
+- Phase: 1 ✅ CLOSED (PR #1 merged at dac7bd1; spike branch deleted; e2e green local + CI).
+- Phase 2 (Whitelabel) OPEN — next: Task 13 (branding inventory).
 - Blockers: none
 
 ## Immediate next step
-Merge PR #1 once CI is green; delete spike branch; close Phase 1 in ROADMAP/SESSION-LOG.
-Then open Phase 2 (whitelabel) with its model/effort table.
+Task 13: full branding inventory (grep hit-list into BRAIN) on a `feature/whitelabel` branch.
+Known targets already spotted: package.json name `studio-admin`, APP_CONFIG (name/title/
+description/copyright), auth v2 layout marketing copy ("Design. Build. Launch. Repeat.",
+"Clone the repo…", "Need help?…GitHub"), sidebar-support-card ("reach out to me on X"),
+dashboard header GitHub button → original repo URL, AGENTS.md (template's), README, favicon/
+icons, Command icon as logo, sample data emails/names in demo pages.
+
+## Model/effort assignments (Phase 2)
+| Task | Nature | Model | Effort | Executor |
+|---|---|---|---|---|
+| 13 Branding inventory | Mechanical grep sweep | Haiku 4.5 | low | builder subagent (Lead verifies) |
+| 14 Nova tokens + naming | Theme-preset system surgery | Fable (session) | high | Lead — preset system is GENERATED code, needs care |
+| 15 Logo + favicon | Component + asset swap | Sonnet 5 | medium | Lead |
+| 16 CI branding gate | Script + CI step | Sonnet 5 | medium | Lead |
 
 ## Adversarial review outcome (PR #1 — verdict: MERGE AFTER FIXES; all fixes applied + verified)
 - FIXED MAJOR-1: stale-cookie redirect loop (/login unreachable after DB reset/secret rotation).
