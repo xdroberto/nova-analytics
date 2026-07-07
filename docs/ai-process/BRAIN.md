@@ -4,25 +4,36 @@
 > every significant action, (4) never reconstruct state from chat memory.
 
 ## Current position
-- Phase: 1 ✅ CLOSED (PR #1 merged at dac7bd1; spike branch deleted; e2e green local + CI).
-- Phase 2 (Whitelabel) OPEN — next: Task 13 (branding inventory).
+- Phase: 2 ✅ CLOSED (PR #2 merged at 1e6a511; branding gate CI-enforced at zero hits).
+- Phase 3 (Landing) OPEN — next: Task 17 (public route structure).
 - Blockers: none
 
 ## Immediate next step
-Task 13: full branding inventory (grep hit-list into BRAIN) on a `feature/whitelabel` branch.
-Known targets already spotted: package.json name `studio-admin`, APP_CONFIG (name/title/
-description/copyright), auth v2 layout marketing copy ("Design. Build. Launch. Repeat.",
-"Clone the repo…", "Need help?…GitHub"), sidebar-support-card ("reach out to me on X"),
-dashboard header GitHub button → original repo URL, AGENTS.md (template's), README, favicon/
-icons, Command icon as logo, sample data emails/names in demo pages.
+Task 17 on `feature/landing`: `/` currently redirects to /dashboard/default
+(src/app/(external)/page.tsx) — replace with a real landing under a marketing route
+group (own minimal layout, no sidebar), keeping /dashboard/* protected. Then Task 18
+(hero/features/CTA with ui-designer craft skills) and Task 19 (Lighthouse ≥90 mobile
++ landing e2e).
 
-## Model/effort assignments (Phase 2)
+## Phase 2 review outcome (PR #2 — MERGE AFTER FIXES; all applied + verified)
+- FIXED MAJOR-1: branding gate was fail-open (grep exit 2 ≡ "clean"); now fails closed
+  (path existence check + explicit status handling; verified exit 2 from bogus cwd) and
+  scans ALL text files under src (no extension allowlist).
+- FIXED MAJOR-2: dark primary contrast 3.72:1 → 6.15:1 (oklch L 0.62→0.511; computed via
+  OKLCH→sRGB→WCAG script, reviewer's math independently reproduced).
+- FIXED MINORs: invoice taxId WS-→NA-; kanban persona key adjacency trap (maya/mayaChen →
+  distinct diego); NovaLogo static <title> + aria-hidden-when-redundant.
+- Side effect: biome check --write normalized formatting across ~19 files (repo toolchain,
+  bundled into b39a085).
+
+## Model/effort assignments (Phase 3)
 | Task | Nature | Model | Effort | Executor |
 |---|---|---|---|---|
-| 13 Branding inventory | Mechanical grep sweep | Haiku 4.5 | low | builder subagent (Lead verifies) |
-| 14 Nova tokens + naming | Theme-preset system surgery | Fable (session) | high | Lead — preset system is GENERATED code, needs care |
-| 15 Logo + favicon | Component + asset swap | Sonnet 5 | medium | Lead |
-| 16 CI branding gate | Script + CI step | Sonnet 5 | medium | Lead |
+| 17 Route structure | Route group surgery | Fable (session) | high | Lead |
+| 18 Landing sections | UI craft (uix skills) | Fable (session) | high | Lead (ui-designer hat) — subagents quota-limited |
+| 19 Quality gate | Lighthouse + e2e | Fable (session) | medium | Lead |
+> Subagent quota: session limit reset 7:20pm + monthly spend cap hit — Phase 3 runs
+> Lead-direct; revisit delegation when quota recovers.
 
 ## Adversarial review outcome (PR #1 — verdict: MERGE AFTER FIXES; all fixes applied + verified)
 - FIXED MAJOR-1: stale-cookie redirect loop (/login unreachable after DB reset/secret rotation).

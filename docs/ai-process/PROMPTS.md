@@ -37,3 +37,20 @@ handling, auth config hardening, error paths, secret leaks, seed honesty, e2e fl
 Required output: findings with severity + file:line + concrete failure scenario + suggested
 fix, ending in MERGE / MERGE AFTER FIXES / DO NOT MERGE. Result: 3 MAJOR + 4 MINOR found,
 verdict MERGE AFTER FIXES — all fixed or explicitly waived with rationale (see BRAIN).
+
+## Phase 2 — Whitelabel
+
+**Branding inventory (workflow, multi-modal sweep):** 5 parallel finders, one search
+modality each (author identity, product identity, outbound URLs, visual assets, sample
+data) + a completeness critic fed everything already found and asked only for what was
+MISSED. Each finder got the same context header: scan scope, what is legitimate (library
+names, MIT attribution, the `radix-nova` shadcn style), and a structured-output schema
+(file, evidence, user-visible?, suggested action). Quota limits killed 4 finders + the
+critic; the Lead completed the missing modalities with direct greps — the combined
+inventory drove both the sweep and the CI gate's forbidden-strings list.
+
+**reviewer (adversarial, Sonnet) — PR #2:** same contract as PR #1, with phase-specific
+hunt list: sweep escapes the gate regex would miss, broken references from mass renames,
+gate quality (fail-open/false-negative analysis), token contrast regressions in both
+modes, logo a11y. Result: 2 MAJOR (fail-open gate; dark-mode AA contrast regression,
+independently reproduced by the Lead before fixing) + 4 MINOR, verdict MERGE AFTER FIXES.
