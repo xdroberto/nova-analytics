@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { useRouter } from "next/navigation";
+
 import { BadgeCheck, Bell, Check, CreditCard, LogOut } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { signOut } from "@/lib/auth-client";
 import { cn, getInitials } from "@/lib/utils";
 
 export function AccountSwitcher({
@@ -27,6 +30,12 @@ export function AccountSwitcher({
   }>;
 }) {
   const [activeUser, setActiveUser] = useState(users[0]);
+  const router = useRouter();
+
+  async function handleLogout() {
+    await signOut();
+    router.push("/login");
+  }
 
   if (!activeUser) {
     return null;
@@ -84,7 +93,7 @@ export function AccountSwitcher({
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={handleLogout}>
           <LogOut />
           Log out
         </DropdownMenuItem>

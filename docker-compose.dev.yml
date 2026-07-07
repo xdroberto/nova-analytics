@@ -1,0 +1,18 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: nova
+      POSTGRES_PASSWORD: novadev
+      POSTGRES_DB: nova
+    # Host port 5434: avoids colliding with services already bound on some dev
+    # machines (native Postgres on 5432, other projects on 5433). Container-internal
+    # port stays 5432.
+    ports: ["5434:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nova"]
+      interval: 5s
+      retries: 10
+volumes:
+  pgdata:

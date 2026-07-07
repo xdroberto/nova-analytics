@@ -4,14 +4,50 @@
 > every significant action, (4) never reconstruct state from chat memory.
 
 ## Current position
-- Phase: 0 (Setup & scaffolding) — ✅ CLOSED (CI green on skeleton, commit 423d359)
-- Next task: Phase 1 · Task 6 — local Postgres via Docker, then the time-boxed Better Auth spike (Task 7)
+- Phase: 1 (Auth: spike → stabilize) — Tasks 6–11 DONE; Task 12 in flight (adversarial review
+  findings FIXED, awaiting CI on PR #1, then merge to develop).
 - Blockers: none
 
 ## Immediate next step
-Open Phase 1: model-strategist proposes the Phase-1 model/effort table, then Task 6
-(`docker-compose.dev.yml` + `.env`) → Task 7 (Better Auth spike on `spike/better-auth`,
-gate at Step 8 = a Roberto decision if it fails fundamentally).
+Merge PR #1 once CI is green; delete spike branch; close Phase 1 in ROADMAP/SESSION-LOG.
+Then open Phase 2 (whitelabel) with its model/effort table.
+
+## Adversarial review outcome (PR #1 — verdict: MERGE AFTER FIXES; all fixes applied + verified)
+- FIXED MAJOR-1: stale-cookie redirect loop (/login unreachable after DB reset/secret rotation).
+  Server Components can't delete cookies → new `/api/session/clear` route handler clears
+  `*better-auth*` cookies and lands on /login. Verified: stale cookie → 2 redirects → /login 200.
+- FIXED MAJOR-2: pg Pool without 'error' listener would crash the Node process on idle-client
+  errors (Postgres restart on the VPS). Also cached pool in globalThis for dev HMR (MINOR-1).
+- FIXED MAJOR-3: seed script masked ANY failure as "already exists (ok)" exit 0. Now only
+  APIError USER_ALREADY_EXISTS is tolerated. Verified: wrong DB password → "seed failed" exit 1.
+- FIXED MINOR-3: forms wrap auth calls in try/catch (network failure → toast, no unhandled rejection).
+- FIXED MINOR-4: e2e email moved inside the test (module scope poisoned CI retries with
+  "user already exists").
+- WAIVED MINOR-2 (explicit trustedOrigins): it would derive from the same BETTER_AUTH_URL env var —
+  if that var is wrong, explicit trustedOrigins is equally wrong. Zero added robustness. Phase 4
+  deploy docs pin BETTER_AUTH_URL and prod login is verified over HTTPS.
+- TRACKED NITs (not fixed now): no return-path after login (deep links land on /dashboard/default);
+  `role: "admin"` hardcoded in dashboard layout is cosmetic today but MUST be DB-backed before any
+  RBAC gate reads it; getSession does a DB round-trip per dashboard request (cookieCache = perf
+  option later).
+
+## Spike findings (Task 7 — Better Auth 1.6.23 ↔ Next 16.2.10/Turbopack: NO fundamental friction)
+- **Endpoints verified:** `POST /api/auth/sign-up/email` (200 + cookie), `POST /api/auth/sign-in/email`
+  (200 + fresh cookie), `GET /api/auth/get-session` (session+user JSON with cookie; `null` without).
+- **Cookie:** `better-auth.session_token` — HttpOnly, SameSite=Lax, Path=/, Max-Age=604800 (7d).
+  No `Secure` flag in dev (http); MUST verify it appears in prod https (Phase 4 audit gate).
+- **Sessions are DB rows** (revocable), track ipAddress + userAgent, 7-day expiry. 2 rows after signup+signin.
+- **Schema gen chicken-and-egg:** `@better-auth/cli generate` loads `auth.ts`, which imports the schema the CLI
+  is about to create → generate FIRST with `drizzleAdapter(db, { provider: "pg" })` (no schema), then wire the
+  import. CLI also does NOT create the output dir (`mkdir -p src/db` first).
+- **drizzle-kit push:** does NOT auto-load `.env` (source it: `set -a; . ./.env; set +a`) and in non-TTY the
+  confirm prompt is swallowed (exits silently WITHOUT applying) → use `push --force`. Verify with `\dt`.
+- **Naming:** TS fields camelCase → DB columns snake_case (`email_verified`). Tables: user, session, account, verification.
+- **Local ports map (this machine):** 5432 = native Windows Postgres service · 5433 = another project's container
+  → Nova dev DB publishes on host **5434** (compose + .env + .env.example aligned).
+- **Dev-env gotcha:** stopping the `npm run dev` wrapper can leave a zombie `next dev` child on Windows holding
+  port 3000 (stale node_modules view → Jest-worker crashes). Fix: `taskkill //PID <pid> //F`.
+- Versions pinned by install: better-auth 1.6.23 · drizzle-orm 0.45.2 · drizzle-kit 0.31.10 · pg 8.22.
 
 ## Environment facts (source of truth for later tasks)
 - Fork: `github.com/xdroberto/nova-analytics` — owner `xdroberto` → GHCR image `ghcr.io/xdroberto/nova-analytics`.
@@ -49,7 +85,17 @@ gate at Step 8 = a Roberto decision if it fails fundamentally).
 | 5 CI skeleton | Opus 4.8 | high | Lead | pre-validated lint/tsc/build locally before push |
 > Cost note: Tasks 2/3/5 could have gone to Sonnet to save budget; kept on Lead because they are the
 > foundational process artifacts (small, high-leverage). Revisit delegation discipline in Phase 2+.
-### Phase 1 — proposed at phase open (next action).
+### Phase 1 — assignments (proposed) + actuals so far
+| Task | Model (proposed) | Model (actual) | Effort | Executor | Note |
+|---|---|---|---|---|---|
+| 6 Local Postgres | Sonnet/medium | Fable 5 (session) | high | Lead | port-collision debugging justified Lead attention |
+| 7 SPIKE Better Auth | Opus/high | Fable 5 (session) | high | Lead (auth-engineer hat) | succeeded well inside time-box |
+| 8 Wire client+forms | Opus/high | — | high | auth-engineer | pending |
+| 9 Protect dashboard | Opus/high | — | high | auth-engineer | pending |
+| 10 Seed script | Haiku/low | — | low | builder | pending |
+| 11 e2e tests | Sonnet/medium | — | medium | qa-tester | pending |
+| 12 Review+merge | Opus/high | — | high | reviewer | pending |
+> Session model switched to Fable 5 (Roberto's /model) after Phase 0 — Lead-executed tasks now run on it.
 
 ## Open items
 - Deadline answer from employer (asked 2026-07-07)
