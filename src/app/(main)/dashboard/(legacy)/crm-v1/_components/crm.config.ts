@@ -266,8 +266,8 @@ export const recentLeadsData = [
   },
   {
     id: "L-1007",
-    name: "Arham Khan",
-    company: "Weblabs Studio",
+    name: "Maya Chen",
+    company: "Nova Analytics",
     status: "Won",
     source: "Website",
     lastActivity: "6h ago",
@@ -298,7 +298,7 @@ export const recentLeadsData = [
   },
   {
     id: "L-1002",
-    name: "Ammar Khnz",
+    name: "Amara Osei",
     company: "BE",
     status: "Contacted",
     source: "Referral",
