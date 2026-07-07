@@ -20,14 +20,17 @@
 .DS_Store
 *.pem
 *.sh
+# repo scripts are tracked (exception to *.sh above)
+!scripts/*.sh
 
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# local env files
-.env*.local
+# local env files (secrets live only here — never committed)
+.env*
+!.env.example
 
 # vercel
 .vercel
