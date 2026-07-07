@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -9,24 +11,16 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { signIn } from "@/lib/auth-client";
 
 const formSchema = z.object({
   email: z.email({ message: "Please enter a valid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  password: z.string().min(1, { message: "Please enter your password." }),
   remember: z.boolean().optional(),
 });
 
-function onSubmit(data: z.infer<typeof formSchema>) {
-  toast("You submitted the following values", {
-    description: (
-      <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
-        <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-      </pre>
-    ),
-  });
-}
-
 export function LoginForm() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -35,6 +29,20 @@ export function LoginForm() {
       remember: false,
     },
   });
+
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    // Credential flows don't auto-redirect via callbackURL; navigate explicitly on success.
+    const { error } = await signIn.email({
+      email: data.email,
+      password: data.password,
+      rememberMe: data.remember,
+    });
+    if (error) {
+      toast.error(error.message ?? "Login failed. Please check your credentials.");
+      return;
+    }
+    router.push("/dashboard/default");
+  }
 
   return (
     <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
@@ -89,7 +97,7 @@ export function LoginForm() {
               />
               <FieldContent>
                 <FieldLabel htmlFor="login-remember" className="font-normal">
-                  Remember me for 30 days
+                  Keep me signed in
                 </FieldLabel>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </FieldContent>
@@ -97,8 +105,8 @@ export function LoginForm() {
           )}
         />
       </FieldGroup>
-      <Button className="w-full" type="submit">
-        Login
+      <Button className="w-full" type="submit" disabled={form.formState.isSubmitting}>
+        {form.formState.isSubmitting ? "Logging in…" : "Login"}
       </Button>
     </form>
   );

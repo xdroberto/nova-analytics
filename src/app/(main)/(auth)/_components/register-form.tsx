@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -8,41 +10,67 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { signUp } from "@/lib/auth-client";
 
 const formSchema = z
   .object({
+    name: z.string().min(2, { message: "Please enter your name." }),
     email: z.email({ message: "Please enter a valid email address." }),
-    password: z.string().min(6, { message: "Password must be at least 6 characters." }),
-    confirmPassword: z.string().min(6, { message: "Confirm Password must be at least 6 characters." }),
+    password: z.string().min(8, { message: "Password must be at least 8 characters." }),
+    confirmPassword: z.string().min(8, { message: "Confirm Password must be at least 8 characters." }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match.",
     path: ["confirmPassword"],
   });
 
-function onSubmit(data: z.infer<typeof formSchema>) {
-  toast("You submitted the following values", {
-    description: (
-      <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
-        <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-      </pre>
-    ),
-  });
-}
-
 export function RegisterForm() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
       confirmPassword: "",
     },
   });
 
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    // Credential flows don't auto-redirect via callbackURL; navigate explicitly on success.
+    const { error } = await signUp.email({
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    });
+    if (error) {
+      toast.error(error.message ?? "Registration failed. Please try again.");
+      return;
+    }
+    router.push("/dashboard/default");
+  }
+
   return (
     <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <FieldGroup className="gap-4">
+        <Controller
+          control={form.control}
+          name="name"
+          render={({ field, fieldState }) => (
+            <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="register-name">Name</FieldLabel>
+              <Input
+                {...field}
+                id="register-name"
+                type="text"
+                placeholder="Your name"
+                autoComplete="name"
+                aria-invalid={fieldState.invalid}
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
         <Controller
           control={form.control}
           name="email"
@@ -98,8 +126,8 @@ export function RegisterForm() {
           )}
         />
       </FieldGroup>
-      <Button className="w-full" type="submit">
-        Register
+      <Button className="w-full" type="submit" disabled={form.formState.isSubmitting}>
+        {form.formState.isSubmitting ? "Creating account…" : "Register"}
       </Button>
     </form>
   );
