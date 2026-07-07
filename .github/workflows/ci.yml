@@ -14,3 +14,26 @@ jobs:
       - run: npm run lint
       - run: npx tsc --noEmit
       - run: npm run build
+  e2e:
+    runs-on: ubuntu-latest
+    needs: quality
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env: { POSTGRES_USER: nova, POSTGRES_PASSWORD: novadev, POSTGRES_DB: nova }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U nova" --health-interval 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://nova:novadev@localhost:5432/nova
+      BETTER_AUTH_SECRET: ci-only-secret-not-production
+      BETTER_AUTH_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      # --force: drizzle-kit push silently no-ops in non-TTY without it
+      - run: npx drizzle-kit push --force
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
