@@ -14,7 +14,7 @@
 ## Phases
 | # | Phase | Status | Exit criteria | Closed at (commit) |
 |---|---|---|---|---|
-| 0 | Setup & scaffolding | 🔄 | App runs locally; CI green on skeleton | — |
+| 0 | Setup & scaffolding | ✅ | App runs locally; CI green on skeleton | 423d359 |
 | 1 | Auth (spike → stabilize) | ⬜ | e2e: signup→login→dashboard→logout | — |
 | 2 | Whitelabel | ⬜ | Branding grep = 0 hits, CI-enforced | — |
 | 3 | Landing | ⬜ | Lighthouse ≥90 mobile; CTA→signup works | — |
@@ -26,3 +26,4 @@
 | Date | Milestone | Commit |
 |---|---|---|
 | 2026-07-07 | Design spec approved | (planning repo) |
+| 2026-07-07 | Phase 0 closed: local boot + CI green on skeleton | 423d359 |
