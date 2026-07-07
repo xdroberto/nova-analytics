@@ -63,7 +63,7 @@ export const defaultInvoiceValues: InvoiceFormValues = {
     phone: "+1-512-555-0184",
     website: "novaanalytics.io",
     addressLines: ["214 Pixel Avenue", "Austin, TX 78701"],
-    taxId: "WS-1029384756",
+    taxId: "NA-1029384756",
     paymentAccountName: "Mercury Business",
     routingNumber: "084009519",
     issuerName: "Maya Chen",

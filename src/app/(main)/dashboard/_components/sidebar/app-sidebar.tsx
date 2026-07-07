@@ -83,7 +83,7 @@ export function AppSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <Link prefetch={false} href="/dashboard/default">
-                <NovaLogo size={20} withWordmark={false} />
+                <NovaLogo size={20} withWordmark={false} decorative />
                 <span className="font-semibold text-base">{APP_CONFIG.name}</span>
               </Link>
             </SidebarMenuButton>

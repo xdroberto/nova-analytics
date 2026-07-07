@@ -103,7 +103,7 @@ separate default.css file. */
   --card-foreground: oklch(0.984 0.003 247.858);
   --popover: oklch(0.205 0.04 268);
   --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.62 0.21 277); /* nova-indigo (lifted for dark) */
+  --primary: oklch(0.511 0.262 276.966); /* nova-indigo deepened for WCAG AA on starlight text */
   --primary-foreground: oklch(0.984 0.003 247.858);
   --secondary: oklch(0.26 0.045 272);
   --secondary-foreground: oklch(0.984 0.003 247.858);
@@ -122,7 +122,7 @@ separate default.css file. */
   --chart-5: oklch(0.85 0.06 260);
   --sidebar: oklch(0.13 0.03 266); /* deeper void */
   --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.62 0.21 277);
+  --sidebar-primary: oklch(0.511 0.262 276.966);
   --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
   --sidebar-accent: oklch(0.26 0.05 273);
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);

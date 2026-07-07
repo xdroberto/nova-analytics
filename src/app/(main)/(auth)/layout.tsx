@@ -10,7 +10,7 @@ export default function Layout({ children }: Readonly<{ children: ReactNode }>) 
       <div className="grid h-dvh justify-center p-2 lg:grid-cols-2">
         <div className="relative order-2 hidden h-full rounded-3xl bg-primary lg:flex">
           <div className="absolute top-10 space-y-1 px-10 text-primary-foreground">
-            <NovaLogo size={40} withWordmark={false} variant="onPrimary" />
+            <NovaLogo size={40} withWordmark={false} variant="onPrimary" decorative />
             <h1 className="font-medium text-2xl">{APP_CONFIG.name}</h1>
             <p className="text-sm">See your data become light.</p>
           </div>
