@@ -37,17 +37,22 @@ export function RegisterForm() {
   });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    // Credential flows don't auto-redirect via callbackURL; navigate explicitly on success.
-    const { error } = await signUp.email({
-      name: data.name,
-      email: data.email,
-      password: data.password,
-    });
-    if (error) {
-      toast.error(error.message ?? "Registration failed. Please try again.");
-      return;
+    try {
+      // Credential flows don't auto-redirect via callbackURL; navigate explicitly on success.
+      const { error } = await signUp.email({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      });
+      if (error) {
+        toast.error(error.message ?? "Registration failed. Please try again.");
+        return;
+      }
+      router.push("/dashboard/default");
+    } catch {
+      // Network-level failure (server unreachable): the client promise rejects.
+      toast.error("Something went wrong. Please try again.");
     }
-    router.push("/dashboard/default");
   }
 
   return (

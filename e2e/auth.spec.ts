@@ -1,9 +1,11 @@
 import { expect, test } from "@playwright/test";
 
-const email = `e2e-${Date.now()}@novaanalytics.io`;
 const password = "E2eTest123!";
 
 test("signup → dashboard → logout → login", async ({ page }) => {
+  // Generated inside the test so a CI retry gets a fresh email — module scope
+  // would reuse the first one and collide with "user already exists".
+  const email = `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@novaanalytics.io`;
   await page.goto("/signup");
   await page.getByLabel(/^name$/i).fill("E2E User");
   await page.getByLabel(/email address/i).fill(email);

@@ -4,13 +4,32 @@
 > every significant action, (4) never reconstruct state from chat memory.
 
 ## Current position
-- Phase: 1 (Auth: spike → stabilize) — Tasks 6–7 DONE. **Spike SUCCEEDED** (gate passed, no ADR-002 fallback needed).
-- Next task: Task 8 — formalize on `feature/auth` (client, wire template forms, redirect)
+- Phase: 1 (Auth: spike → stabilize) — Tasks 6–11 DONE; Task 12 in flight (adversarial review
+  findings FIXED, awaiting CI on PR #1, then merge to develop).
 - Blockers: none
 
 ## Immediate next step
-Task 8: `git checkout develop && git checkout -b feature/auth`, re-apply spike files, create
-`src/lib/auth-client.ts`, wire the template's auth screens (pick ONE of `/auth/v1/*` vs `/auth/v2/*`).
+Merge PR #1 once CI is green; delete spike branch; close Phase 1 in ROADMAP/SESSION-LOG.
+Then open Phase 2 (whitelabel) with its model/effort table.
+
+## Adversarial review outcome (PR #1 — verdict: MERGE AFTER FIXES; all fixes applied + verified)
+- FIXED MAJOR-1: stale-cookie redirect loop (/login unreachable after DB reset/secret rotation).
+  Server Components can't delete cookies → new `/api/session/clear` route handler clears
+  `*better-auth*` cookies and lands on /login. Verified: stale cookie → 2 redirects → /login 200.
+- FIXED MAJOR-2: pg Pool without 'error' listener would crash the Node process on idle-client
+  errors (Postgres restart on the VPS). Also cached pool in globalThis for dev HMR (MINOR-1).
+- FIXED MAJOR-3: seed script masked ANY failure as "already exists (ok)" exit 0. Now only
+  APIError USER_ALREADY_EXISTS is tolerated. Verified: wrong DB password → "seed failed" exit 1.
+- FIXED MINOR-3: forms wrap auth calls in try/catch (network failure → toast, no unhandled rejection).
+- FIXED MINOR-4: e2e email moved inside the test (module scope poisoned CI retries with
+  "user already exists").
+- WAIVED MINOR-2 (explicit trustedOrigins): it would derive from the same BETTER_AUTH_URL env var —
+  if that var is wrong, explicit trustedOrigins is equally wrong. Zero added robustness. Phase 4
+  deploy docs pin BETTER_AUTH_URL and prod login is verified over HTTPS.
+- TRACKED NITs (not fixed now): no return-path after login (deep links land on /dashboard/default);
+  `role: "admin"` hardcoded in dashboard layout is cosmetic today but MUST be DB-backed before any
+  RBAC gate reads it; getSession does a DB round-trip per dashboard request (cookieCache = perf
+  option later).
 
 ## Spike findings (Task 7 — Better Auth 1.6.23 ↔ Next 16.2.10/Turbopack: NO fundamental friction)
 - **Endpoints verified:** `POST /api/auth/sign-up/email` (200 + cookie), `POST /api/auth/sign-in/email`

@@ -31,17 +31,22 @@ export function LoginForm() {
   });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    // Credential flows don't auto-redirect via callbackURL; navigate explicitly on success.
-    const { error } = await signIn.email({
-      email: data.email,
-      password: data.password,
-      rememberMe: data.remember,
-    });
-    if (error) {
-      toast.error(error.message ?? "Login failed. Please check your credentials.");
-      return;
+    try {
+      // Credential flows don't auto-redirect via callbackURL; navigate explicitly on success.
+      const { error } = await signIn.email({
+        email: data.email,
+        password: data.password,
+        rememberMe: data.remember,
+      });
+      if (error) {
+        toast.error(error.message ?? "Login failed. Please check your credentials.");
+        return;
+      }
+      router.push("/dashboard/default");
+    } catch {
+      // Network-level failure (server unreachable): the client promise rejects.
+      toast.error("Something went wrong. Please try again.");
     }
-    router.push("/dashboard/default");
   }
 
   return (

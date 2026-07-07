@@ -22,9 +22,11 @@ import { ThemeSwitcher } from "./_components/sidebar/theme-switcher";
 
 export default async function Layout({ children }: Readonly<{ children: ReactNode }>) {
   // Authoritative session check (the proxy only does an optimistic cookie check).
+  // On failure, route through /api/session/clear: it deletes the stale cookie the
+  // proxy would otherwise keep trusting, which would loop /login <-> /dashboard.
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) {
-    redirect("/login");
+    redirect("/api/session/clear");
   }
   const sessionUser = {
     id: session.user.id,
