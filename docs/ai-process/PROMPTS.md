@@ -54,3 +54,19 @@ hunt list: sweep escapes the gate regex would miss, broken references from mass 
 gate quality (fail-open/false-negative analysis), token contrast regressions in both
 modes, logo a11y. Result: 2 MAJOR (fail-open gate; dark-mode AA contrast regression,
 independently reproduced by the Lead before fixing) + 4 MINOR, verdict MERGE AFTER FIXES.
+
+## Phase 3 — Landing
+
+**ui-designer (Lead wearing the hat, uix-nextgen-design skill):** capture intent first
+(dev-tool landing, dark-first brand statement, zero client JS for Lighthouse), consume the
+existing Phase-2 tokens (never invent parallel ones), restraint over decoration (one
+distinctive move: CSS aurora glow; hero visual is a static inline SVG on chart tokens).
+Performance was treated as debugging, not vibes: Lighthouse JSON → LCP phase breakdown →
+root cause (~750KB of font preloads from the theme font-switcher) → surgical fix → re-measure
+(median of 3 runs).
+
+**reviewer (warm context reuse) — PR #3:** instead of spawning a fresh agent, the Phase-2
+reviewer was re-tasked via message with the new diff scope and a hunt list targeting this
+diff's real risks: font-switcher breakage from preload changes, stale persisted font
+preferences, dark-wrapper vs theme-boot collision, e2e locator fragility. Result: 4 MINOR
+(3 fixed, 1 explicitly accepted as a documented product decision) + 1 NIT.
