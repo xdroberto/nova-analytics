@@ -4,16 +4,16 @@
 > every significant action, (4) never reconstruct state from chat memory.
 
 ## Current position
-- Phase: 2 ✅ CLOSED (PR #2 merged at 1e6a511; branding gate CI-enforced at zero hits).
-- Phase 3 (Landing) OPEN — next: Task 17 (public route structure).
-- Blockers: none
+- Phase: 3 ✅ CLOSED (PR #3 merged at 6cd239e; Lighthouse 94 mobile / 100 desktop; e2e 4/4).
+- Phase 4 (Deploy) OPEN — next: Task 20 (production Dockerfile + standalone output).
+- Blockers: **Tasks 21–22 need Roberto** — Hetzner CPX11 creation (Ubuntu 24.04, SSH key)
+  and DNS A record `nova.robertobh.dev` → VPS IP.
 
 ## Immediate next step
-Task 17 on `feature/landing`: `/` currently redirects to /dashboard/default
-(src/app/(external)/page.tsx) — replace with a real landing under a marketing route
-group (own minimal layout, no sidebar), keeping /dashboard/* protected. Then Task 18
-(hero/features/CTA with ui-designer craft skills) and Task 19 (Lighthouse ≥90 mobile
-+ landing e2e).
+Task 20 on `feature/deploy` (no Roberto needed): `output: "standalone"` in next.config.mjs
+(+ set `turbopack.root`/`outputFileTracingRoot` — the stray C:\Users\xdrob\package-lock.json
+workspace-root issue noted in Phase 0), production Dockerfile + .dockerignore, local
+docker-build proof. Then WAIT for VPS credentials (Task 21 gate).
 
 ## Phase 2 review outcome (PR #2 — MERGE AFTER FIXES; all applied + verified)
 - FIXED MAJOR-1: branding gate was fail-open (grep exit 2 ≡ "clean"); now fails closed
