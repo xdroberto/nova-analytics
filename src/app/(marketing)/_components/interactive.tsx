@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties, PointerEvent, ReactNode } from "react";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Cursor-reactive card. A radial glow tracks the pointer via --mx/--my, and
@@ -72,4 +72,49 @@ export function SpotlightGroup({ className, children }: { className?: string; ch
       {children}
     </div>
   );
+}
+
+/**
+ * Counts up from 0 to `value` when it first scrolls into view. Renders the
+ * final value immediately under reduced motion. `format` adds thousands
+ * separators (e.g. 1,200).
+ */
+export function CountUp({
+  value,
+  decimals = 0,
+  format = false,
+}: {
+  value: number;
+  decimals?: number;
+  format?: boolean;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [n, setN] = useState(0);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (!window.matchMedia("(prefers-reduced-motion: no-preference)").matches) {
+      setN(value);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0].isIntersecting) return;
+        io.disconnect();
+        const start = performance.now();
+        const step = (t: number) => {
+          const p = Math.min((t - start) / 1400, 1);
+          setN(value * (1 - (1 - p) ** 3));
+          if (p < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      },
+      { threshold: 0.5 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [value]);
+
+  return <span ref={ref}>{format ? Math.round(n).toLocaleString("en-US") : n.toFixed(decimals)}</span>;
 }
