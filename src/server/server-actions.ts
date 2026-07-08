@@ -10,16 +10,18 @@ import {
   parsePreference,
 } from "@/lib/preferences/preferences-config";
 
-export async function getValueFromCookie(key: string): Promise<string | undefined> {
-  const cookieStore = await cookies();
-  return cookieStore.get(key)?.value;
-}
-
 export async function setValueToCookie(
   key: string,
   value: string,
   options: { path?: string; maxAge?: number } = {},
 ): Promise<void> {
+  // Allow-list: this action exists ONLY to persist known UI preferences. Without
+  // this guard it was a generic same-origin cookie-write primitive callable with
+  // any name. (`getValueFromCookie` — a matching arbitrary cookie-READ action that
+  // could return the HttpOnly session token — was dead code and has been removed.)
+  if (!(key in PREFERENCE_REGISTRY)) {
+    throw new Error(`setValueToCookie: refusing to write unknown cookie key "${key}"`);
+  }
   const cookieStore = await cookies();
   cookieStore.set(key, value, {
     path: options.path ?? "/",

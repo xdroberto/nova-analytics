@@ -14,7 +14,16 @@ export function GET(request: NextRequest) {
   for (const cookie of request.cookies.getAll()) {
     // Covers both "better-auth.*" and the "__Secure-better-auth.*" prod variants.
     if (cookie.name.includes("better-auth")) {
-      response.cookies.delete(cookie.name);
+      // A `__Secure-`-prefixed cookie can ONLY be cleared by a Set-Cookie that also
+      // carries `Secure` — otherwise the browser REJECTS the deletion and the stale
+      // prod cookie survives, re-triggering the /login<->/dashboard loop this route
+      // exists to break. `cookies.delete(name)` omits Secure, so set an expired
+      // cookie and match Secure to the name's prefix (dev is plain http, no prefix).
+      response.cookies.set(cookie.name, "", {
+        path: "/",
+        maxAge: 0,
+        secure: cookie.name.startsWith("__Secure-"),
+      });
     }
   }
   return response;
