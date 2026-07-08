@@ -11,9 +11,16 @@ import { Instrument_Sans, JetBrains_Mono, Sora } from "next/font/google";
 export const sora = Sora({
   subsets: ["latin"],
   weight: ["600", "700"],
-  display: "swap",
+  // `optional` (not swap): the Sora h1 is the LCP element; under throttled
+  // mobile the swap-in pushed LCP past the gate. With optional the h1 paints
+  // in the metric-matched fallback if Sora isn't ready in ~100ms (LCP stays
+  // fast, CLS ~0 via size-adjust); Sora shows from the second, cached visit.
+  display: "optional",
   variable: "--font-sora",
-  preload: true, // headings = LCP element in the hero
+  // Not preloaded: paired with `optional`, this lets the h1 (LCP) paint in the
+  // metric-matched fallback immediately instead of waiting on Sora, keeping LCP
+  // off the critical path. Sora swaps in on the cached visit.
+  preload: false,
 });
 
 export const instrumentSans = Instrument_Sans({

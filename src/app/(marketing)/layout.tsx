@@ -68,9 +68,36 @@ export default function MarketingLayout({ children }: Readonly<{ children: React
 
         <SiteHeader>
           <nav aria-label="Main" className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6">
-            <Link prefetch={false} href="/" className="rounded-md focus-visible:outline-2 focus-visible:outline-ring">
-              <NovaLogo size={24} />
+            <Link
+              prefetch={false}
+              href="/"
+              className="flex items-center gap-2.5 rounded-md focus-visible:outline-2 focus-visible:outline-ring"
+            >
+              <NovaLogo size={24} withWordmark={false} decorative />
+              <span className="font-heading font-semibold text-[16px] text-white tracking-[-0.01em]">
+                Nova Analytics
+              </span>
             </Link>
+            <div className="hidden items-center gap-8 md:flex">
+              <a
+                href="#features"
+                className="font-medium text-[14px] text-muted-foreground transition-colors hover:text-white"
+              >
+                Product
+              </a>
+              <a
+                href="#metrics"
+                className="font-medium text-[14px] text-muted-foreground transition-colors hover:text-white"
+              >
+                Customers
+              </a>
+              <a
+                href="#cta"
+                className="font-medium text-[14px] text-muted-foreground transition-colors hover:text-white"
+              >
+                Pricing
+              </a>
+            </div>
             <div className="flex items-center gap-2">
               <Button asChild variant="ghost">
                 <Link prefetch={false} href="/login">
@@ -88,18 +115,46 @@ export default function MarketingLayout({ children }: Readonly<{ children: React
 
         <main className="relative z-10 flex-1">{children}</main>
 
-        <footer className="relative z-10 border-border/60 border-t">
-          <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row">
-            <NovaLogo size={18} />
-            <div className="flex items-center gap-6 text-muted-foreground text-sm">
-              <Link prefetch={false} href="/login" className="transition-colors hover:text-foreground">
+        <footer
+          className="relative z-10 border-t"
+          style={{ borderColor: "color-mix(in oklab, var(--chart-5) 8%, transparent)" }}
+        >
+          <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-5 px-6 py-10">
+            <Link prefetch={false} href="/" className="flex items-center gap-2.5">
+              <NovaLogo size={18} withWordmark={false} decorative />
+              <span className="font-heading font-semibold text-[14px] text-foreground">Nova Analytics</span>
+            </Link>
+            <div className="flex flex-wrap items-center gap-7 text-[13.5px]">
+              <Link
+                prefetch={false}
+                href="/login"
+                className="text-foreground-tertiary transition-colors hover:text-white"
+              >
                 Log in
               </Link>
-              <Link prefetch={false} href="/signup" className="transition-colors hover:text-foreground">
+              <Link
+                prefetch={false}
+                href="/signup"
+                className="text-foreground-tertiary transition-colors hover:text-white"
+              >
                 Sign up
               </Link>
+              <Link
+                prefetch={false}
+                href="/login"
+                className="text-foreground-tertiary transition-colors hover:text-white"
+              >
+                Security
+              </Link>
+              <Link
+                prefetch={false}
+                href="/login"
+                className="text-foreground-tertiary transition-colors hover:text-white"
+              >
+                Docs
+              </Link>
             </div>
-            <p className="text-muted-foreground text-sm">© 2026 Nova Analytics</p>
+            <p className="text-[13px] text-foreground-tertiary">© 2026 Nova Analytics</p>
           </div>
         </footer>
       </div>

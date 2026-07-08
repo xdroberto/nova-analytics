@@ -91,6 +91,14 @@
     transform: translate(-100px, -50px) scale(1.2);
   }
 }
+@keyframes nvMarquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
 
 /* Decorative text shine — built from v2 chart tokens (lavender -> cyan). */
 .nv-shine {
@@ -160,4 +168,21 @@
       animation-range: entry 0% entry 55%;
     }
   }
+}
+
+/* Infinite logo marquee. Static (first row visible) under reduced motion. */
+.nv-marquee {
+  display: flex;
+  width: max-content;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .nv-marquee {
+    animation: nvMarquee 28s linear infinite;
+  }
+}
+
+/* Anchor targets (#features, #metrics, #cta) must clear the fixed header. */
+html {
+  scroll-padding-top: 5rem;
 }
