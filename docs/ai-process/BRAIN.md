@@ -4,14 +4,16 @@
 > every significant action, (4) never reconstruct state from chat memory.
 
 ## Current position
-- Phase: **5 (Hardening) ✅ CLOSED + LIVE in production** (promoted via PR #7 = merge b531e52; deploy
-  success, health ok). Shipped: Vitest + `evaluateHealth`, the security bypass suite, explicit Better Auth
-  rate limiting, supply-chain `ignore-scripts`, Node-22 toolchain pin, and an adversarial review (1 HIGH
-  auth bypass — orphaned /chat + /mail — fixed). **LIVE at https://nova.robertobh.dev.**
-- Now: **Phase 5.5 (UI/UX & diagrams) — PARALLEL TRACKS** (see the ⚡ section above). THIS session: diagram
-  suite ✅ DONE (6, verified rendering on GitHub); responsive audit @5 breakpoints DEFERRED until the new
-  landing lands; integration duty = review/merge the UI session's PR. UI session runs on
-  `feature/ui-landing-polish` (aurora-tech v2 + landing, screenshot-gated).
+- Phases **0–5 ✅ CLOSED + LIVE in production**; **Phase 5.5 landing v2 + micro-interaction polish + login-polish
+  MERGED** (PR #8/#9/#11 to develop; promoted to main via PR #13; login-polish PR #15). **Phase 6 (Delivery) 🔄
+  in flight.** **LIVE at https://nova.robertobh.dev.**
+- Release: **v1.0.0 cut on develop** (`chore(release)` f4758a0) plus the logout/bfcache fix (PR #14). Promotion
+  PR develop→main (#16) is open to ship v1.0.0 + the pre-submission docs batch + the UI seam trim together (one deploy).
+- Phase 6 status: package ✅ (SUBMISSION, README badges, creds rotated, `COST-REPORT.md`, `AUDIT-PRE-SUBMISSION.md`,
+  v1.0.0); final audit gate ✅. **Only Roberto's video walkthrough + behavioral questionnaire remain** (two TODO
+  placeholders in SUBMISSION.md).
+- Open (low): formal responsive audit @360/375/768/1024/1440 not run as a discrete deliverable (e2e pins 375px
+  no-overflow; landing is live) — noted in `docs/limitations.md`.
 - Session note: a fresh session boots from ROADMAP→BRAIN→latest SESSION-LOG with zero chat context.
 
 ## ✅ Commitlint gate — first live run RESOLVED (PR #6)
@@ -23,8 +25,8 @@
   conventional-commits-parser@6.4.0"). Fixed by regenerating with npm 10 (`fix(deps)` 4bc3d81).
   See Decisions log + the Phase-5 hygiene backlog (node/npm pin, to prevent recurrence).
 
-## 🎨 Parallel UI session (Phase 5.5 — landing redesign) — ACTIVE
-A separate UI/UX session runs the landing redesign on branch `feature/ui-landing-polish` in an
+## 🎨 Parallel UI session (Phase 5.5 — landing redesign) — ✅ CLOSED (merged via PR #8/#9/#11; login-polish PR #15) — historical
+A separate UI/UX session ran the landing redesign on branch `feature/ui-landing-polish` in an
 **isolated git worktree** (`../nova-analytics-landing`, off origin/develop). Scope: ONLY
 `src/app/(marketing)/**`, design tokens (`src/app/globals.css`), design-reference evidence, and this
 note. It does NOT touch auth/proxy/deploy/CI/scripts. Foundation = aurora-tech **v2** tokens (operator
@@ -45,8 +47,8 @@ base**. Its front-matter auto-triggers broadly and WILL offer its 161 palettes /
 3. **Every visual change ships behind Roberto's screenshot approval BEFORE merge** (Phase 5.5 exit crit).
 4. **Gated to Phase 5.5** — do not let it drive Phase 5 hardening.
 
-## ⚡ Phase 5.5 — PARALLEL TRACKS (active split 2026-07-08 — BOTH sessions read this)
-Two sessions run concurrently with **no file collision**:
+## ⚡ Phase 5.5 — PARALLEL TRACKS (✅ CLOSED — landing v2 merged PR #8/#9/#11; historical record below)
+Two sessions ran concurrently with **no file collision**:
 - **Diagrams + integration session (this one):** Mermaid diagram suite in `docs/architecture.md`
   (architecture · DB ERD · auth flow · CI/CD · VPS topology · git flow — GitHub renders ` ```mermaid `
   natively). Owns **integration duty**: reviews + merges the UI session's PR. Runs the **responsive audit
@@ -64,8 +66,8 @@ Two sessions run concurrently with **no file collision**:
    `PasswordAuthentication no` + `KbdInteractiveAuthentication no` + `X11Forwarding no` (drop-in
    `99-nova-hardening.conf`; `sshd -t` validated → `reload`; a fresh key login verified → no lockout;
    `PubkeyAuthentication yes` intact). fail2ban 1.0.2 active (`[sshd]` jail, systemd backend) — validated
-   the finding on install: the port was under active brute-force, **6 IPs banned / 57 failed attempts on
-   the first scan.** Details in docs/deployment.md. Root stays key-only; ufw 22/80/443. No Roberto action
+   the finding on install: the port was under active brute-force — **9 IPs banned / 96 failed attempts in
+   the first hour** (single figure reconciled across deployment.md + SESSION-LOG + the Decisions log). Details in docs/deployment.md. Root stays key-only; ufw 22/80/443. No Roberto action
    left here.
 1. ✅ **UptimeRobot — LIVE (2026-07-08).** HTTP(s) monitor on `/api/health`, 5-min interval, email alerts,
    SSL-expiry watch included (Roberto's account; screenshot captured). Was the last Phase-4 item →
@@ -81,14 +83,14 @@ Two sessions run concurrently with **no file collision**:
    into BRAIN/chat/logs again. `admin@novaanalytics.io` unchanged.
 
 ## Immediate next step (fresh session)
-Phases 0–5 done + LIVE; **Phase 5.5 + 6 in flight** (see "Current position" + the ⚡ parallel-tracks
-section for the full picture). On THIS (diagrams/integration) track the pending items are:
-1. **Integrate the UI session's `feature/ui-landing-polish` PR** when it lands (integration duty).
-2. **Run the responsive audit @360/375/768/1024/1440** AFTER the new landing is in develop.
-3. When Roberto asks, **promote Phase 6 → main** via a develop→main PR (README badges, SUBMISSION.md,
-   diagrams go to prod).
-Phase-6 delivery drafts (SUBMISSION.md + README badges) are done; Roberto owns the video + behavioral
-questionnaire (two `TODO` placeholders in SUBMISSION.md). model/effort: propose at each phase open.
+Phases 0–5 done + LIVE; landing v2 + login-polish merged; **Phase 6 (Delivery) 🔄 closing.** Pending:
+1. **Merge the develop→main promotion PR (#16)** — ships v1.0.0 + the pre-submission docs batch + the UI seam
+   trim in one deploy; then verify health + the manual logout→Back check and **tag v1.0.0**.
+2. **Roberto:** record the video walkthrough + complete the behavioral questionnaire (the two `TODO`
+   placeholders in SUBMISSION.md) — the only PRD items left.
+3. (Low) formal responsive audit @360/375/768/1024/1440 — documented as a gap in `docs/limitations.md`.
+Phase-6 package (SUBMISSION, README badges, rotated creds, `COST-REPORT.md`, `AUDIT-PRE-SUBMISSION.md`, v1.0.0)
+is done. model/effort: propose at each phase open.
 
 ## Repo hygiene batch (Phase 5 — ✅ ALL COMPLETE, shipped to main via PR #7)
 - ✅ **Node/npm pin (DONE):** `.nvmrc` (22) + advisory `"engines": {"node":"22.x"}` shipped. (`engine-strict`

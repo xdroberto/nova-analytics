@@ -10,6 +10,7 @@ import { auth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { getPreference } from "@/server/server-actions";
 
+import { BfcacheGuard } from "./_components/bfcache-guard";
 import { AccountSwitcher } from "./_components/sidebar/account-switcher";
 import { LayoutControls } from "./_components/sidebar/layout-controls";
 import { SearchDialog } from "./_components/sidebar/search-dialog";
@@ -47,6 +48,7 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
         } as React.CSSProperties
       }
     >
+      <BfcacheGuard />
       <AppSidebar variant={variant} collapsible={collapsible} user={sessionUser} />
       <SidebarInset
         className={cn(

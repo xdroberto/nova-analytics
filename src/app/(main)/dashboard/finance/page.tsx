@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { BalanceDistributionCard } from "./_components/balance-distribution-card";
-import { FinanceNotification } from "./_components/finance-notification";
 import { IncomeBreakdown } from "./_components/income-breakdown";
 import { OverviewKpis } from "./_components/overview-kpis";
 import { QuickActions } from "./_components/quick-actions";
@@ -55,7 +54,6 @@ export default function Page() {
 
             <div className="flex flex-col gap-4 xl:col-span-6">
               <IncomeBreakdown />
-              <FinanceNotification />
             </div>
           </div>
 

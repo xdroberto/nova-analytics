@@ -22,6 +22,31 @@ test("baseline security headers are present on responses", async ({ page }) => {
   expect(headers["permissions-policy"]).toContain("camera=()");
 });
 
+test("after logout, reloading the dashboard lands on /login (never re-shows the authenticated view)", async ({
+  page,
+  context,
+}) => {
+  // This is the redirect the client BfcacheGuard triggers when a page is restored
+  // from the browser's back/forward cache. Dashboard pages are dynamically rendered
+  // and Next owns their Cache-Control (it serves `no-cache`, not `no-store`), so the
+  // guard reloads any bfcache-restored page (`pageshow` + `persisted`) — and, as
+  // asserted here, a logged-out reload redirects to /login rather than re-showing the
+  // stale dashboard. (Real-bfcache Back is verified manually; headless bfcache is
+  // unreliable to trigger, and window.location.reload can't be spied in Chromium.)
+  const email = `sec-bfcache-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@novaanalytics.io`;
+  const signup = await page.request.post("/api/auth/sign-up/email", {
+    data: { name: "Bfcache Probe", email, password: "SecPass123!" },
+  });
+  expect(signup.ok()).toBeTruthy();
+
+  await page.goto("/dashboard/default");
+  await expect(page).toHaveURL(/dashboard/);
+
+  await context.clearCookies(); // log out
+  await page.reload();
+  await expect(page).toHaveURL(/login/);
+});
+
 test("anonymous request to a protected page is redirected to /login at the edge", async ({ request }) => {
   const res = await request.get("/dashboard/default", { maxRedirects: 0 });
   expect(res.status()).toBe(307);

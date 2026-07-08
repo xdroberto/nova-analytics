@@ -139,20 +139,6 @@ export default function MarketingLayout({ children }: Readonly<{ children: React
               >
                 Sign up
               </Link>
-              <Link
-                prefetch={false}
-                href="/login"
-                className="text-foreground-tertiary transition-colors hover:text-white"
-              >
-                Security
-              </Link>
-              <Link
-                prefetch={false}
-                href="/login"
-                className="text-foreground-tertiary transition-colors hover:text-white"
-              >
-                Docs
-              </Link>
             </div>
             <p className="text-[13px] text-foreground-tertiary">© 2026 Nova Analytics</p>
           </div>
