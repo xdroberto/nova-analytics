@@ -26,6 +26,20 @@ Remaining once VPS arrives: harden + install (Task 21 step 2 script), prod .env 
 deploy + migrations + seed, secrets in GitHub, push-to-deploy demo, UptimeRobot, analytics
 decision (ADR-004), auditor pre-deploy gate.
 
+## Phase 4 review outcome (PR #4 — MERGE AFTER FIXES; 4 MAJOR + 4 MINOR + NIT)
+- FIXED MAJOR-1 (no rollback): `deploy/remote-deploy.sh` captures the running image, health-checks
+  with retries, rolls back to it on failure (still exits 1). deploy.yml tags `:latest` + `:<sha>`.
+- MAJOR-2 (GHCR auth): documented — package is private-by-default on first push regardless of repo
+  visibility. Decision surfaced to Roberto (recommend: make package public; alt: read PAT + docker
+  login on VPS). Blocks first pull; resolved at deploy step. deployment.md "GHCR image access".
+- FIXED MAJOR-3 (ADR contradictions): Decision line now says Postgres is a SEPARATE compose project;
+  RAM unified to "2 GB nominal / ~1.9 GiB usable"; swap unified to 3G; shared-VPS alternative adopted.
+- MAJOR-4 (reboot startup ordering): ACCEPTED as documented risk (not the suggested wait-for-DB —
+  it would delay the DB-independent landing too, net worse). Landing stays up; pg pool self-heals.
+- FIXED MINOR-5 (--chown + .next/cache; verified nextjs writes cache in-container), MINOR-6 (retry
+  loop vs sleep+single curl), MINOR-7 (client_max_body_size 10m), MINOR-8 (health force-dynamic).
+  NIT-9: nginx conf marked pre-TLS template.
+
 ## Phase 2 review outcome (PR #2 — MERGE AFTER FIXES; all applied + verified)
 - FIXED MAJOR-1: branding gate was fail-open (grep exit 2 ≡ "clean"); now fails closed
   (path existence check + explicit status handling; verified exit 2 from bogus cwd) and
