@@ -20,6 +20,18 @@
   conventional-commits-parser@6.4.0"). Fixed by regenerating with npm 10 (`fix(deps)` 4bc3d81).
   See Decisions log + the Phase-5 hygiene backlog (node/npm pin, to prevent recurrence).
 
+## ⚖ ui-ux-pro-max skill — HARD RULES (installed 2026-07-08, for Phase 5.5 only)
+Installed globally (`~/.claude/skills/ui-ux-pro-max`, MIT, nextlevelbuilder) as a **read-only knowledge
+base**. Its front-matter auto-triggers broadly and WILL offer its 161 palettes / 57 font pairings /
+"design systems" — **those are OFF-LIMITS for Nova.** Non-negotiable:
+1. **Nova's aurora-tech design tokens are LAW.** The skill NEVER introduces a new palette, font, style, or
+   design-system; ignore every color/typography/style output it produces.
+2. **Consult ONLY for:** UX guideline checklists, dashboard chart-type selection guidance, WCAG/contrast +
+   interaction-timing rules, and anti-pattern lists. Knowledge only — do NOT run its Python scripts
+   (supply-chain discipline; the documented rules stand alone).
+3. **Every visual change ships behind Roberto's screenshot approval BEFORE merge** (Phase 5.5 exit crit).
+4. **Gated to Phase 5.5** — do not let it drive Phase 5 hardening.
+
 ## ⚠ Pending Roberto actions (not code — external/his account)
 1. ✅ **UptimeRobot — LIVE (2026-07-08).** HTTP(s) monitor on `/api/health`, 5-min interval, email alerts,
    SSL-expiry watch included (Roberto's account; screenshot captured). Was the last Phase-4 item →
@@ -196,6 +208,15 @@ decision (ADR-004), auditor pre-deploy gate.
   a fresh clone).
 
 ## Decisions log (newest first)
+- 2026-07-08: **Phase 5.5 added + ui-ux-pro-max installed (operator-driven scope, Roberto).** New phase
+  **5.5 "UI/UX polish & diagrams"** inserted between Hardening (5) and Delivery (6) — exit: (1) Mermaid
+  diagram suite renders on GitHub (architecture · DB ERD · auth flow · CI/CD · VPS topology · git flow),
+  (2) dashboard responsive audit @360/375/768/1024/1440 (no h-overflow, e2e-backed), (3) micro-interaction
+  polish approved by Roberto via screenshots BEFORE merge. Phase 5 scope also EXPANDED with an
+  operator-required **security bypass test suite** + **SSH/VPS hardening verification**. Installed the
+  `ui-ux-pro-max` skill (MIT) under HARD RULES (dedicated section above): aurora-tech tokens are LAW,
+  knowledge-only, screenshot-gated, Phase-5.5-only. Rationale: leverage a design knowledge base while
+  refusing generic AI-slop and palette drift.
 - 2026-07-08: **develop→main promotion PR #6 opened + CI drill caught a real bug.** Promotes the
   3 infra/docs commits (repo-steward + commitlint gate + Phase-4 close) to main. The gate's first
   live run exposed that `npm ci` had been red in ALL CI jobs on develop since `ad8e66e`: that commit

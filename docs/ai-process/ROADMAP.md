@@ -19,7 +19,8 @@
 | 2 | Whitelabel | ✅ | Branding grep = 0 hits, CI-enforced | 1e6a511 |
 | 3 | Landing | ✅ | Lighthouse ≥90 mobile; CTA→signup works | 6cd239e |
 | 4 | Deploy | ✅ | Public HTTPS + push-to-deploy + audit gate + uptime monitoring (UptimeRobot **LIVE**) | af6625c |
-| 5 | Hardening | ⬜ | Full suite green in CI; review findings fixed | — |
+| 5 | Hardening | ⬜ | Full suite green in CI; review findings fixed; **security bypass suite green** (no-cookie / invalid / expired → deny·redirect; auth rate-limit responds) | — |
+| 5.5 | UI/UX polish & diagrams | ⬜ | (1) Mermaid diagram suite renders on GitHub — architecture · DB ERD · auth flow · CI/CD · VPS topology · git flow; (2) dashboard responsive audit passes @360/375/768/1024/1440 (no h-overflow, e2e-backed); (3) micro-interaction polish batch approved by Roberto via screenshots BEFORE merge | — |
 | 6 | Delivery | ⬜ | PRD checklist 100% + final audit gate | — |
 
 ## Milestone log
