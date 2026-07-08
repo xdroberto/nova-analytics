@@ -103,6 +103,14 @@ docker-build proof. Then WAIT for VPS credentials (Task 21 gate).
   `--repo xdroberto/nova-analytics` (or `--base develop` on PRs) to target the fork.
 
 ## Decisions log (newest first)
+- 2026-07-08: **INFRA PIVOT (ADR-003 amended):** dedicated CPX11 no longer economical
+  (legacy ~$6.99 gone; new ~$21/mo ≈ 3×). Nova deploys to the EXISTING CPX11 at
+  178.156.248.110 (Ubuntu 24.04.4, also serving portfolio + sideeffects static +
+  moonhouse Python) with container isolation: hard mem limits (web ~512M, db ~384M),
+  2G swap (already active), restart policies. Operating rules: portfolio/sideeffects are
+  NEVER stopped; moonhouse pausable only with Roberto's explicit approval; builds stay
+  CI-only. DNS A nova.robertobh.dev → 178.156.248.110 verified (Cloudflare, DNS-only).
+  Isolation proposal awaiting Roberto's approval before any deploy action.
 - 2026-07-07: Phase 0 closed — canonical state live, 10 agent roles defined, CI skeleton green (1m16s).
 - 2026-07-07: Spike & stabilize for auth; auditor role added; capture-as-you-go evidence. (spec §5–§8)
 - 2026-07-07: Dedicated Hetzner CPX11 for hosting; builds only in CI; GHCR images. (ADR-003)
