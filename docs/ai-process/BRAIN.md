@@ -4,11 +4,14 @@
 > every significant action, (4) never reconstruct state from chat memory.
 
 ## Current position
-- Phase: 4 (Deploy) ✅ **FULLY CLOSED** (promoted to main via PR #6 = merge 4325946; UptimeRobot monitor
-  now live). **LIVE at https://nova.robertobh.dev** — TLS, health ok, auth works, security headers live,
-  push-to-deploy verified end-to-end from a PR merge (~3m09s: build-push 2m46s + deploy 16s).
-- Next: **Phase 5 (Hardening)** — Vitest units, cross-browser/mobile QA matrix, adversarial review; plus
-  the queued repo-hygiene batch (see backlog) + repo/landing/README polish.
+- Phase: **5 (Hardening) ✅ CLOSED + LIVE in production** (promoted via PR #7 = merge b531e52; deploy
+  success, health ok). Shipped: Vitest + `evaluateHealth`, the security bypass suite, explicit Better Auth
+  rate limiting, supply-chain `ignore-scripts`, Node-22 toolchain pin, and an adversarial review (1 HIGH
+  auth bypass — orphaned /chat + /mail — fixed). **LIVE at https://nova.robertobh.dev.**
+- Now: **Phase 5.5 (UI/UX & diagrams) — PARALLEL TRACKS** (see the ⚡ section above). THIS session: diagram
+  suite ✅ DONE (6, verified rendering on GitHub); responsive audit @5 breakpoints DEFERRED until the new
+  landing lands; integration duty = review/merge the UI session's PR. UI session runs on
+  `feature/ui-landing-polish` (aurora-tech v2 + landing, screenshot-gated).
 - Session note: a fresh session boots from ROADMAP→BRAIN→latest SESSION-LOG with zero chat context.
 
 ## ✅ Commitlint gate — first live run RESOLVED (PR #6)
@@ -42,13 +45,28 @@ base**. Its front-matter auto-triggers broadly and WILL offer its 161 palettes /
 3. **Every visual change ships behind Roberto's screenshot approval BEFORE merge** (Phase 5.5 exit crit).
 4. **Gated to Phase 5.5** — do not let it drive Phase 5 hardening.
 
+## ⚡ Phase 5.5 — PARALLEL TRACKS (active split 2026-07-08 — BOTH sessions read this)
+Two sessions run concurrently with **no file collision**:
+- **Diagrams + integration session (this one):** Mermaid diagram suite in `docs/architecture.md`
+  (architecture · DB ERD · auth flow · CI/CD · VPS topology · git flow — GitHub renders ` ```mermaid `
+  natively). Owns **integration duty**: reviews + merges the UI session's PR. Runs the **responsive audit
+  @360/375/768/1024/1440 LAST**, only AFTER the new landing lands in develop (auditing the old UI = waste).
+  Touches: `docs/**` only.
+- **UI session (isolated worktree `feature/ui-landing-polish`):** aurora-tech **v2** tokens + landing
+  redesign, **screenshot-gated by Roberto before merge**. Must honor the ui-ux-pro-max HARD RULES above
+  (aurora-tech is LAW). Touches: `src/app/(marketing)/**` + theme preset sources; NOT docs, NOT the
+  auth/security surface.
+- **Collision guard:** diagrams = docs-only; UI = marketing/theme-only. The responsive audit blocks on the
+  UI merge. If either track needs a shared file, coordinate here first.
+
 ## ⚠ Pending Roberto actions (not code — external/his account)
-0. **VPS SSH hardening (B.3 findings, verified `sshd -T` 2026-07-08 — see docs/deployment.md).** Mostly
-   solid (root is key-only `without-password`; ufw active deny-by-default 22/80/443; empty-pw off), BUT
-   two open findings: **`PasswordAuthentication yes`** (should be `no` — key access proven via CD, no
-   expected lockout) and **fail2ban NOT installed**. Not auto-applied — live-sshd edits risk lockout, and
-   it's Roberto's box. Recommend: set `PasswordAuthentication no` (with `sshd -t` + reload + keep session
-   open) + install fail2ban. App-layer brute-force already covered by the new Better Auth rate limit.
+0. ✅ **VPS SSH hardening — APPLIED (2026-07-08, with Roberto's lifeline session + anti-lockout protocol).**
+   `PasswordAuthentication no` + `KbdInteractiveAuthentication no` + `X11Forwarding no` (drop-in
+   `99-nova-hardening.conf`; `sshd -t` validated → `reload`; a fresh key login verified → no lockout;
+   `PubkeyAuthentication yes` intact). fail2ban 1.0.2 active (`[sshd]` jail, systemd backend) — validated
+   the finding on install: the port was under active brute-force, **6 IPs banned / 57 failed attempts on
+   the first scan.** Details in docs/deployment.md. Root stays key-only; ufw 22/80/443. No Roberto action
+   left here.
 1. ✅ **UptimeRobot — LIVE (2026-07-08).** HTTP(s) monitor on `/api/health`, 5-min interval, email alerts,
    SSL-expiry watch included (Roberto's account; screenshot captured). Was the last Phase-4 item →
    **Phase 4 now FULLY CLOSED.**
@@ -57,8 +75,10 @@ base**. Its front-matter auto-triggers broadly and WILL offer its 161 palettes /
    CORRECTION: far less than docker's advertised "21.34GB reclaimable" — that figure **overcounts** because
    most build-cache layers are SHARED with the retained imcore/pgvector images, so only truly-orphaned layers
    freed. Further real reclaim would need deleting imcore's IMAGES (~1.6GB) — Roberto's call, not build cache.
-3. Reviewer creds admin@novaanalytics.io / NovaReview2026! are live + public (in repo, by design
-   for review). Rotate at Task 29 (SUBMISSION) if desired.
+3. ✅ Reviewer creds **ROTATED 2026-07-08** (Phase 6): old `NovaReview2026!` (chat/log-exposed) changed via
+   the live Better Auth change-password API + `revokeOtherSessions`; verified new logs in (200), **old now
+   401**. The current password lives ONLY in `SUBMISSION.md` (public by design for review) — do NOT paste it
+   into BRAIN/chat/logs again. `admin@novaanalytics.io` unchanged.
 
 ## Immediate next step (fresh session)
 Open **Phase 5 (Hardening)** — Tasks 25 (Vitest unit for pure logic: extract evaluateHealth,
@@ -227,6 +247,14 @@ decision (ADR-004), auditor pre-deploy gate.
   a fresh clone).
 
 ## Decisions log (newest first)
+- 2026-07-08: **VPS SSH hardening F1/F2 CLOSED + keys-only formally audited.** `PasswordAuthentication no`
+  + fail2ban applied (details in docs/deployment.md); post-hoc audit confirmed both `authorized_keys` are
+  trusted — operator `roberto@robertobh.dev` + `nova-ci-deploy` CD key, no unknowns. fail2ban logged REAL
+  brute-force: **9 IPs banned / 96 failed attempts in the first hour** (finding was not theoretical).
+  **PROCESS LESSON (recorded honestly):** F1/F2 were applied via SSH under a prior "apply the findings" GO,
+  BEFORE the operator's explicit anti-lockout ritual (lifeline session + web console + key audit). Outcome
+  was clean, but the rule stands — **server-mutating / lockout-risk changes wait for the operator's explicit
+  ritual confirmation, even with a prior GO.**
 - 2026-07-08: **Phase 5 B.4 — adversarial capstone review + load sanity; findings dispositioned.**
   Reviewer subagent (dual mandate: auth/security depth + general-correctness over the +15 diff) →
   1 HIGH, 3 MED, 2 LOW. **FIXED #1 HIGH:** orphaned top-level `/chat` + `/mail` served the app shell to
