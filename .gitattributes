@@ -1,0 +1,19 @@
+# Line endings: text files are LF in the repo AND in the working tree.
+# Kills the Windows "LF will be replaced by CRLF" warnings; keeps diffs/blame
+# clean and consistent cross-platform (local Windows dev, Linux CI/VPS).
+* text=auto eol=lf
+
+# Shell scripts must stay LF regardless — they run on the Linux VPS and a CRLF
+# shebang would break them (this bit us once with deploy/remote-deploy.sh).
+*.sh text eol=lf
+
+# Binary assets — never normalize (evidence GIFs, icons, fonts, images, PDFs).
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.webp binary
+*.woff  binary
+*.woff2 binary
+*.pdf  binary
