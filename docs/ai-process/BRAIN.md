@@ -32,6 +32,20 @@ base**. Its front-matter auto-triggers broadly and WILL offer its 161 palettes /
 3. **Every visual change ships behind Roberto's screenshot approval BEFORE merge** (Phase 5.5 exit crit).
 4. **Gated to Phase 5.5** — do not let it drive Phase 5 hardening.
 
+## ⚡ Phase 5.5 — PARALLEL TRACKS (active split 2026-07-08 — BOTH sessions read this)
+Two sessions run concurrently with **no file collision**:
+- **Diagrams + integration session (this one):** Mermaid diagram suite in `docs/architecture.md`
+  (architecture · DB ERD · auth flow · CI/CD · VPS topology · git flow — GitHub renders ` ```mermaid `
+  natively). Owns **integration duty**: reviews + merges the UI session's PR. Runs the **responsive audit
+  @360/375/768/1024/1440 LAST**, only AFTER the new landing lands in develop (auditing the old UI = waste).
+  Touches: `docs/**` only.
+- **UI session (isolated worktree `feature/ui-landing-polish`):** aurora-tech **v2** tokens + landing
+  redesign, **screenshot-gated by Roberto before merge**. Must honor the ui-ux-pro-max HARD RULES above
+  (aurora-tech is LAW). Touches: `src/app/(marketing)/**` + theme preset sources; NOT docs, NOT the
+  auth/security surface.
+- **Collision guard:** diagrams = docs-only; UI = marketing/theme-only. The responsive audit blocks on the
+  UI merge. If either track needs a shared file, coordinate here first.
+
 ## ⚠ Pending Roberto actions (not code — external/his account)
 0. **VPS SSH hardening (B.3 findings, verified `sshd -T` 2026-07-08 — see docs/deployment.md).** Mostly
    solid (root is key-only `without-password`; ufw active deny-by-default 22/80/443; empty-pw off), BUT
