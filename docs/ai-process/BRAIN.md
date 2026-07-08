@@ -136,5 +136,5 @@ docker-build proof. Then WAIT for VPS credentials (Task 21 gate).
 - Deadline answer from employer (asked 2026-07-07)
 - Logo asset from Roberto (placeholder spark in use)
 - VPS credentials (Phase 4), DNS for `nova.robertobh.dev` (Phase 4), analytics pick (Phase 4)
-- **Plan gap noted:** ADR-001/002/003 are referenced (spec §7, decisions log) but no task creates the files.
-  Write `docs/adr/001-repo.md`, `002-auth.md`, `003-hosting.md` opportunistically (or in Phase 6 / Task 27).
+- ~~Plan gap: ADR files~~ RESOLVED — `docs/adr/001-base-repository.md`, `002-auth-stack.md`,
+  `003-hosting.md` written while waiting at the VPS gate (c5568eb). ADR-004 (analytics) pending Phase 4.
