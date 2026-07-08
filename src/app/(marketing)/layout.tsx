@@ -13,7 +13,10 @@ import { Button } from "@/components/ui/button";
  */
 export default function MarketingLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <div className="dark">
+    // [color-scheme:dark] keeps native browser UI (scrollbars, form controls,
+    // selection) dark too — ThemeBootScript sets it on <html> from the user's
+    // app preference, which defaults to light.
+    <div className="dark [color-scheme:dark]">
       <div className="flex min-h-dvh flex-col bg-background text-foreground">
         <header className="sticky top-0 z-40 border-border/60 border-b bg-background/80 backdrop-blur-md">
           <nav aria-label="Main" className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6">

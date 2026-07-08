@@ -5,11 +5,12 @@ test("landing renders hero and hero CTA leads to signup", async ({ page }) => {
   await expect(page.getByRole("heading", { name: /see your data become light/i })).toBeVisible();
   await expect(page.getByRole("heading", { name: /start seeing clearly/i })).toBeVisible();
 
-  // "Get started" exists in nav, hero, and CTA band — take the hero one.
-  await page
-    .getByRole("link", { name: /^get started$/i })
-    .nth(1)
-    .click();
+  // "Get started" exists in nav, hero, and CTA band — anchor to the hero's own
+  // section (the one containing the h1) instead of relying on DOM order.
+  const heroSection = page.locator("section", {
+    has: page.getByRole("heading", { name: /see your data become light/i }),
+  });
+  await heroSection.getByRole("link", { name: /^get started$/i }).click();
   await expect(page).toHaveURL(/signup/);
   await expect(page.getByRole("heading", { name: /create your account/i })).toBeVisible();
 });
