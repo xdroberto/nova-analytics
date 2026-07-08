@@ -65,8 +65,10 @@ Two sessions run concurrently with **no file collision**:
    CORRECTION: far less than docker's advertised "21.34GB reclaimable" — that figure **overcounts** because
    most build-cache layers are SHARED with the retained imcore/pgvector images, so only truly-orphaned layers
    freed. Further real reclaim would need deleting imcore's IMAGES (~1.6GB) — Roberto's call, not build cache.
-3. Reviewer creds admin@novaanalytics.io / NovaReview2026! are live + public (in repo, by design
-   for review). Rotate at Task 29 (SUBMISSION) if desired.
+3. ✅ Reviewer creds **ROTATED 2026-07-08** (Phase 6): old `NovaReview2026!` (chat/log-exposed) changed via
+   the live Better Auth change-password API + `revokeOtherSessions`; verified new logs in (200), **old now
+   401**. The current password lives ONLY in `SUBMISSION.md` (public by design for review) — do NOT paste it
+   into BRAIN/chat/logs again. `admin@novaanalytics.io` unchanged.
 
 ## Immediate next step (fresh session)
 Open **Phase 5 (Hardening)** — Tasks 25 (Vitest unit for pure logic: extract evaluateHealth,
