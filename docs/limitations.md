@@ -25,12 +25,29 @@ honest list of what is intentionally out of scope or imperfect, kept current as 
   (~seconds). The landing stays up throughout; accepted rather than blocking startup on the DB.
 - **CI deploys as `root`** over SSH via a dedicated, revocable key. On this host `docker`
   group ≈ root, so a locked-down deploy user adds little real isolation; noted as future work.
+- **Package manager: npm (not pnpm).** pnpm was considered for stricter, content-addressed installs
+  and a smaller store, but a mid-trial migration wasn't worth the churn against the live review window —
+  and registry supply-chain risk is client-agnostic anyway. The lockfile is pinned to the CI/prod
+  toolchain (Node 22 → npm 10) via `.nvmrc` + `engines`; see BRAIN for the npm-11-vs-10 lockfile incident
+  that motivated the pin.
 
 ## Known accepted findings
 
-- **`npm audit`:** a moderate advisory (postcss, pulled transitively by Next) — build-time
-  only, no user-supplied CSS at runtime. Fix needs a breaking Next change; re-evaluated per
-  Next minor rather than force-fixed.
+- **`npm audit`:** 6 moderate advisories, none runtime-exploitable — postcss via Next (build-time CSS
+  tooling, no user-supplied CSS at runtime) and esbuild via drizzle-kit (dev-only migration tooling, not
+  in the prod image). Fixes are breaking downgrades (Next / drizzle-kit); re-evaluated per upstream minor
+  rather than force-fixed.
+- **Auth rate-limit IP behind the proxy** (adversarial-review finding). Rate limiting is enabled and the
+  e2e suite pins the 5/60s sign-in rule, but in production behind nginx the per-IP key needs
+  `advanced.ipAddress.trustedProxies` (nginx / docker-bridge CIDR) to recover the real client IP —
+  otherwise every `X-Forwarded-For`-bearing client collapses into one shared `no-trusted-ip` bucket
+  (coarser throttling; a narrow same-bucket DoS). NOT remotely exploitable: the container binds
+  `127.0.0.1:3000`, so a forged single-value XFF can't reach the app directly. Follow-up: set
+  `trustedProxies` and verify against the live nginx→container hop.
+- **No RBAC** (adversarial-review finding). `role: "admin"` is hardcoded for every authenticated user
+  (display-only; the `user` table has no role column), so there is a single access tier — every logged-in
+  user has full `/dashboard/*` access. Fine for a single-reviewer trial; a real product needs a DB-backed
+  role + server-side authorization before any role-gated feature.
 
 ## Process slips caught & fixed (repo hygiene)
 
@@ -38,8 +55,9 @@ Two repository-hygiene slips got through in early phases; both are fixed, and th
 below now prevents recurrence:
 
 1. **36 inherited upstream branches** were never pruned after the fork (distributed ownership,
-   no single guardian of branch hygiene). Cleanup is queued as the `repo-steward`'s first task,
-   to run in its own dedicated session.
+   no single guardian of branch hygiene). **Fixed 2026-07-08:** the `repo-steward` pruned the 34
+   inherited branches from `origin` (safety-guarded, with a full-SHA reversibility log archived in
+   `evidence/`); `origin` now carries only `develop` + `main`.
 2. **A deploy script was silently swallowed by `.gitignore`.** The Phase-4 `*.sh` ignore rule
    only excepted `scripts/*.sh`, so `deploy/remote-deploy.sh` was untracked; the first
    push-to-deploy failed at the `scp` step (`tar: empty archive`) with no deployment and no

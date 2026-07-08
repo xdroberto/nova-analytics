@@ -4,25 +4,49 @@
 > every significant action, (4) never reconstruct state from chat memory.
 
 ## Current position
-- Phase: 4 (Deploy) ✅ CLOSED (af6625c). **LIVE at https://nova.robertobh.dev** — TLS, health ok,
-  auth works, security headers live, push-to-deploy demoed end-to-end with rollback-safe CD.
-- Next: Phase 5 (Hardening) + Roberto's requested polish of repo/landing/README (see below).
-- Session note: this closes the working session; a fresh session boots from ROADMAP→BRAIN→
-  latest SESSION-LOG and continues from here with zero chat context.
+- Phase: 4 (Deploy) ✅ **FULLY CLOSED** (promoted to main via PR #6 = merge 4325946; UptimeRobot monitor
+  now live). **LIVE at https://nova.robertobh.dev** — TLS, health ok, auth works, security headers live,
+  push-to-deploy verified end-to-end from a PR merge (~3m09s: build-push 2m46s + deploy 16s).
+- Next: **Phase 5 (Hardening)** — Vitest units, cross-browser/mobile QA matrix, adversarial review; plus
+  the queued repo-hygiene batch (see backlog) + repo/landing/README polish.
+- Session note: a fresh session boots from ROADMAP→BRAIN→latest SESSION-LOG with zero chat context.
 
-## ⚠ Watch on next PR
-- The commitlint `commits` CI job is `pull_request`-scoped, so it has NOT run in CI yet
-  (pushes to develop skip it). Config + rules are verified locally; its **first live CI run
-  is the next PR** — confirm it scopes to base..head correctly and doesn't choke on the
-  merge-ref. If it misfires, the fix is the `--from/--to` SHA expressions in `.github/workflows/ci.yml`.
+## ✅ Commitlint gate — first live run RESOLVED (PR #6)
+- The `commits` gate ran live for the first time on **PR #6 and PASSED (30s).** base..head SHA
+  scoping (`171fc1e..4bc3d81`) is correct — the earlier "watch the merge-ref / SHA expressions"
+  concern was a **red herring**. The real bug the drill exposed: `npm ci` had been failing in ALL
+  CI jobs on `develop` since `ad8e66e` — that commit regenerated `package-lock.json` with **npm 11**
+  (local Node 24) but CI/Docker/prod pin **Node 22 → npm 10**, which rejected the lock ("Missing
+  conventional-commits-parser@6.4.0"). Fixed by regenerating with npm 10 (`fix(deps)` 4bc3d81).
+  See Decisions log + the Phase-5 hygiene backlog (node/npm pin, to prevent recurrence).
+
+## ⚖ ui-ux-pro-max skill — HARD RULES (installed 2026-07-08, for Phase 5.5 only)
+Installed globally (`~/.claude/skills/ui-ux-pro-max`, MIT, nextlevelbuilder) as a **read-only knowledge
+base**. Its front-matter auto-triggers broadly and WILL offer its 161 palettes / 57 font pairings /
+"design systems" — **those are OFF-LIMITS for Nova.** Non-negotiable:
+1. **Nova's aurora-tech design tokens are LAW.** The skill NEVER introduces a new palette, font, style, or
+   design-system; ignore every color/typography/style output it produces.
+2. **Consult ONLY for:** UX guideline checklists, dashboard chart-type selection guidance, WCAG/contrast +
+   interaction-timing rules, and anti-pattern lists. Knowledge only — do NOT run its Python scripts
+   (supply-chain discipline; the documented rules stand alone).
+3. **Every visual change ships behind Roberto's screenshot approval BEFORE merge** (Phase 5.5 exit crit).
+4. **Gated to Phase 5.5** — do not let it drive Phase 5 hardening.
 
 ## ⚠ Pending Roberto actions (not code — external/his account)
-1. **UptimeRobot**: create a monitor on https://nova.robertobh.dev/api/health (5-min, keyword
-   "ok" or status 200, email alert). Needs his account — I can't create one. Last Phase-4 item.
-2. **Disk on the VPS**: 87% used (4.7G free). NOT Nova (its image is 334MB, CI-built). Culprit is
-   **22GB of Docker build cache (21GB reclaimable)** from IMCORE images built ON the host
-   (imcore-frontend/api, pgvector present). `docker builder prune -f` reclaims ~21GB safely
-   (doesn't touch running containers or tagged images). Roberto's call — it's imcore's cache.
+0. **VPS SSH hardening (B.3 findings, verified `sshd -T` 2026-07-08 — see docs/deployment.md).** Mostly
+   solid (root is key-only `without-password`; ufw active deny-by-default 22/80/443; empty-pw off), BUT
+   two open findings: **`PasswordAuthentication yes`** (should be `no` — key access proven via CD, no
+   expected lockout) and **fail2ban NOT installed**. Not auto-applied — live-sshd edits risk lockout, and
+   it's Roberto's box. Recommend: set `PasswordAuthentication no` (with `sshd -t` + reload + keep session
+   open) + install fail2ban. App-layer brute-force already covered by the new Better Auth rate limit.
+1. ✅ **UptimeRobot — LIVE (2026-07-08).** HTTP(s) monitor on `/api/health`, 5-min interval, email alerts,
+   SSL-expiry watch included (Roberto's account; screenshot captured). Was the last Phase-4 item →
+   **Phase 4 now FULLY CLOSED.**
+2. ✅ **Disk on the VPS — pruned (2026-07-08).** `docker builder prune -f` ran (build-cache only, approved):
+   **87%→74%, ~4GB actually reclaimed on disk** (free 4.7G→9.4G), all services stayed up. ⚠ HONEST
+   CORRECTION: far less than docker's advertised "21.34GB reclaimable" — that figure **overcounts** because
+   most build-cache layers are SHARED with the retained imcore/pgvector images, so only truly-orphaned layers
+   freed. Further real reclaim would need deleting imcore's IMAGES (~1.6GB) — Roberto's call, not build cache.
 3. Reviewer creds admin@novaanalytics.io / NovaReview2026! are live + public (in repo, by design
    for review). Rotate at Task 29 (SUBMISSION) if desired.
 
@@ -37,6 +61,27 @@ key points** — treat as polish folded into Phase 5/6:
 - Repo hygiene: consider a `.gitattributes` (`* text=auto eol=lf`) to kill the CRLF warnings;
   the `*.sh` gitignore trap already bit once (deploy script) — now fixed with `!deploy/*.sh`.
 model/effort for Phase 5: propose at phase open (model-strategist).
+
+## Repo hygiene backlog (Phase 5 batch — staged on branch `chore/repo-hygiene`, NOT in PR #6)
+- **Node/npm pin (root cause of the PR#6 lock break):** add `.nvmrc` (22) + `"engines": {"node":"22.x"}`
+  in package.json; consider `engine-strict=true` in `.npmrc` so npm 11 (Node 24) can't silently
+  re-desync the lockfile against CI/Docker/prod (Node 22 → npm 10). Highest-value item — prevents recurrence.
+- ✅ **Supply-chain hardening — ADOPTED (2026-07-08), verdict verified not assumed:** `ignore-scripts=true`
+  now in `.npmrc`. Empirical verify all green WITHOUT lifecycle scripts: `npm@10 ci --ignore-scripts` →
+  unit → `drizzle-kit push` (esbuild-kit path) → `next build` → **full e2e 10/10**. Install-script census:
+  esbuild ×4 + sharp — both ship prebuilt binaries via optionalDependencies, scripts not needed. Precedent:
+  the production Dockerfile ALREADY ran `npm ci --ignore-scripts` since Phase 4 (prod never ran them).
+  Trade-off documented: our `prepare` (husky) is skipped → README quickstart adds one-time `npm run prepare`
+  (existing clones unaffected — `core.hooksPath=.husky` persists in .git/config).
+- **Package-manager note (for ADR/limitations):** pnpm considered as a stricter client; deferred
+  mid-trial (migration cost vs live review window). Registry supply-chain risk is client-agnostic anyway.
+- **npm-audit verdict (DONE 2026-07-08): 6 moderate, 0 runtime-exploitable for Nova.** (a) esbuild ≤0.24.2
+  → @esbuild-kit/* → drizzle-kit = DEV-only (migration tooling, absent from the prod image; advisory is
+  dev-server-only). (b) postcss <8.5.10 → next = in the prod tree but not runtime-exploitable (build-time
+  CSS tooling; the XSS needs untrusted CSS input, no such path in Nova). No trivial fix — `audit fix --force`
+  = breaking downgrades (next→9.3.3, drizzle-kit→0.18.1), rejected; both await upstream transitive bumps.
+  ACCEPT + monitor; optional Phase-5: npm `overrides` to force patched postcss/esbuild IF build+e2e stay green.
+- Also still queued: `.gitattributes` (`* text=auto eol=lf`, CRLF); README submission polish (Task 27).
 
 ## How the live deploy works (topology recap for a cold session)
 - Host: existing Hetzner CPX11 178.156.248.110 (Ubuntu 24.04.4), SHARED with portfolio +
@@ -164,10 +209,72 @@ decision (ADR-004), auditor pre-deploy gate.
 - ⚠ Local-only: Next infers workspace root from a stray `C:\Users\xdrob\package-lock.json` → set `turbopack.root`
   + `outputFileTracingRoot` in `next.config.mjs` at Task 20 (does NOT affect CI's clean checkout).
 - `npm audit`: 2 moderate vulnerabilities → review in Phase 4 audit gate.
-- **gh + fork gotcha:** `gh` defaults to the UPSTREAM (arhamkhnz) for `run list`/PR ops. Always pass
-  `--repo xdroberto/nova-analytics` (or `--base develop` on PRs) to target the fork.
+- **gh + fork gotcha (LESSON — bit the war-room TWICE):** `gh` defaults to the UPSTREAM (arhamkhnz) as base
+  repo for `pr`/`run` ops, so bare `gh pr list` / `gh pr view N` read UPSTREAM — that is exactly what made the
+  war-room believe #59/#61 were "our stray open PRs" (they are arhamkhnz's; our fork has 0 open PRs). **Resolved:**
+  `gh repo set-default xdroberto/nova-analytics` is now set in this clone. Even so, do NOT trust bare `gh pr`
+  output blindly — pass `--repo xdroberto/nova-analytics` for anything load-bearing (the default can be lost on
+  a fresh clone).
 
 ## Decisions log (newest first)
+- 2026-07-08: **Phase 5 B.4 — adversarial capstone review + load sanity; findings dispositioned.**
+  Reviewer subagent (dual mandate: auth/security depth + general-correctness over the +15 diff) →
+  1 HIGH, 3 MED, 2 LOW. **FIXED #1 HIGH:** orphaned top-level `/chat` + `/mail` served the app shell to
+  anonymous visitors — the proxy matcher is an allow-list (`/dashboard/*` only) and those `(main)/chat|mail`
+  layouts had no `getSession`; the REAL guarded chat/mail live at `/dashboard/*` (where the sidebar points),
+  so the top-level ones were unlinked template duplicates → deleted (20 files), regression-pinned, allow-list
+  guard boundary documented in proxy.ts. **FIXED #3/#4/#6:** sign-in rate limit 10→5/60s + honest comment
+  (dropped the false "stricter than built-in 3/10s" claim); 429 test made robust (≤5 ceiling — exact count
+  can't be pinned on a shared localhost IP where an earlier spec pre-warms the bucket); headers test asserts
+  all 5. **DOCUMENTED (limitations.md):** #2 rate-limit needs `trustedProxies` behind nginx (NOT remotely
+  exploitable — container binds 127.0.0.1), #5 no RBAC (`role` hardcoded, display-only). Reviewer confirmed
+  SOUND: forged-cookie reaches the authoritative getSession; expired-session hits the right schema + reuses
+  the cookie; 429 ordering can't poison logins; `customRules` path form correct; health refactor preserves
+  behavior. **Load (autocannon LIVE):** p99 < 75ms, 0 errors / ~16k req, mem peak ~89/512 MiB, no OOM.
+  **Verdict: promotable** → Phase-5 develop→main PR next.
+- 2026-07-08: **Security bypass suite GREEN 🎥 + explicit rate limiting enabled (Phase 5, tasks 2–3).**
+  Vitest landed (evaluateHealth extracted+tested; 6 proxy characterization tests pin the optimistic
+  edge). e2e security suite (ordered: per-IP rate-limit hammering LAST so it can't poison logins):
+  headers regression (XFO/nosniff/Referrer-Policy) · anonymous 307→/login · get-session null ·
+  forged-cookie denied (authoritative getSession + /api/session/clear loop-breaker) · **literal
+  expired-session deny** (real signup → SQL `expires_at` to past → validly-signed cookie rejected by
+  the DB check — distinct defense layer from signature rejection, both now pinned) · repeated failed
+  sign-ins → 429. TDD honest: 429 test born RED (Better Auth rate limiting is prod-only by default,
+  `enabled ?? isProduction` verified in 1.6.23 source) → `rateLimit` enabled explicitly in auth.ts
+  (100/10s global; 10/60s on /sign-in/email; memory storage) → **full local e2e 10/10**.
+  **Incident during RED run (systematic-debugging):** auth POSTs 500'd with "Cannot find module
+  'better-auth/next-js'" — NOT an app bug: stale `.next/dev` Turbopack cache referencing the
+  pre-vitest-install node_modules layout (module existed on disk; `next build` resolved it fine).
+  Fix: kill dev server + `rm -rf .next`. Lesson: after any npm install that reshapes node_modules,
+  purge `.next` before trusting dev-server behavior (same family as the BRAIN dev-env gotcha).
+- 2026-07-08: **Phase 5.5 added + ui-ux-pro-max installed (operator-driven scope, Roberto).** New phase
+  **5.5 "UI/UX polish & diagrams"** inserted between Hardening (5) and Delivery (6) — exit: (1) Mermaid
+  diagram suite renders on GitHub (architecture · DB ERD · auth flow · CI/CD · VPS topology · git flow),
+  (2) dashboard responsive audit @360/375/768/1024/1440 (no h-overflow, e2e-backed), (3) micro-interaction
+  polish approved by Roberto via screenshots BEFORE merge. Phase 5 scope also EXPANDED with an
+  operator-required **security bypass test suite** + **SSH/VPS hardening verification**. Installed the
+  `ui-ux-pro-max` skill (MIT) under HARD RULES (dedicated section above): aurora-tech tokens are LAW,
+  knowledge-only, screenshot-gated, Phase-5.5-only. Rationale: leverage a design knowledge base while
+  refusing generic AI-slop and palette drift.
+- 2026-07-08: **develop→main promotion PR #6 opened + CI drill caught a real bug.** Promotes the
+  3 infra/docs commits (repo-steward + commitlint gate + Phase-4 close) to main. The gate's first
+  live run exposed that `npm ci` had been red in ALL CI jobs on develop since `ad8e66e`: that commit
+  built package-lock.json with **npm 11** (local Node 24), but CI/Docker/prod pin **Node 22 → npm 10**,
+  which resolves @commitlint ^21.2.0's tree differently and rejects the lock ("Missing
+  conventional-commits-parser@6.4.0"). Reproduced locally with `npx npm@10 ci`. Fixed by regenerating
+  the lock with npm 10 (`fix(deps)` 4bc3d81) → accepted by both npm majors, confined to commitlint's
+  transitive tree, zero app deps. **Full PR-run then went GREEN: commits + quality + e2e all success.**
+  PR #6 is now 4 commits; promotion decision is Roberto's (do NOT auto-merge). Drill working as intended.
+- 2026-07-08: **repo-steward hygiene #1 DONE — 34 inherited fork branches pruned from origin.**
+  Deleted the origin∩upstream set (feat/* ×18, chore/* ×4, archive/* ×3, codex/* ×2, fix/* ×2,
+  migration/next15-tailwindv4, 3.0.0, eslint-compatibility-fixes, feature/prefs-and-style-fixes,
+  update-mail-sidebar) via safety-guarded `git push origin --delete` (aborts unless set==34 and no
+  protected ref). All 34 identical to upstream tips → recoverable (upstream public + full-SHA restore
+  log in scratchpad). `fetch --prune` also cleared 5 STALE `origin/feature/*` tracking refs — those
+  branches were already deleted on origin post-merge; all 5 tips confirmed MERGED→develop, local
+  branches kept, zero work lost. **origin now = develop + main only.** (BRAIN's earlier "~36" was an
+  estimate; true inherited-on-origin count = 34.) Reviewer-verified authorship on the two look-alike
+  branches (feature/prefs-and-style-fixes, feat/infra) = upstream's Arham Khan, not Roberto.
 - 2026-07-08: **repo-steward role added (Phase 4, adaptive process).** Two repo-hygiene slips
   (36 unpruned inherited branches; `deploy/remote-deploy.sh` swallowed by the `*.sh` gitignore,
   fixed 171fc1e) → new role owns the repo as a graded deliverable with MECHANICAL enforcement:

@@ -99,3 +99,46 @@ The reviewer user is seeded through the live API (same code path as the seed scr
 6. GHCR package visibility resolved (see "GHCR image access"); image pulled;
    `docker compose up -d`; `/api/health` returns `{"status":"ok"}`.
 7. Schema pushed via tunnel; reviewer user seeded via the live signup API.
+
+## VPS security posture (verified 2026-07-08, `sshd -T` effective values)
+
+Verified read-only, recorded honestly (not assumed):
+
+| Control | Actual value | Status |
+|---|---|---|
+| `PermitRootLogin` | `without-password` (key-only; passwords rejected for root) | ✅ |
+| `PubkeyAuthentication` | `yes` (CD ed25519 key + operator key; 2 keys in `/root/.ssh/authorized_keys`) | ✅ |
+| `PermitEmptyPasswords` | `no` | ✅ |
+| `KbdInteractiveAuthentication` | `no` | ✅ |
+| `MaxAuthTries` | `6` | ✅ |
+| **`PasswordAuthentication`** | **`yes`** | ⚠️ **open** — should be `no` (all access is key-based) |
+| **fail2ban** | **not installed** | ⚠️ no SSH brute-force auto-ban |
+| `X11Forwarding` | `yes` | ⓘ minor — unnecessary on a server |
+| `ufw` | active; default deny incoming; only `22/tcp` + `80,443/tcp` (Nginx Full) allowed | ✅ |
+| OS | Ubuntu 24.04.4 LTS | — |
+
+**Open findings (operator decision — not auto-applied; live-sshd changes risk lockout):**
+1. `PasswordAuthentication no` — key access is proven (CD deploys succeed via key), so this closes the
+   password brute-force surface with no expected lockout. Apply in `/etc/ssh/sshd_config.d/` + `sshd -t` +
+   reload (keep the current session open to verify before disconnecting).
+2. Install fail2ban (`sshd` jail) for defense-in-depth on port 22.
+3. Optional: `X11Forwarding no`.
+
+App-layer brute-force is separately mitigated by Better Auth rate limiting (`/sign-in/email` 10/60s).
+
+## Load sanity (autocannon vs LIVE, 2026-07-08)
+
+Staged load against production — targets `/` and `/api/health` ONLY (never `/api/auth/*`: the rate
+limiter would pollute results with 429s). Web container `mem_limit` is 512M; `docker stats nova-web-1`
+sampled every 2s throughout.
+
+| Stage | Target | p99 | avg | req/s | total | errors | mem peak |
+|---|---|---|---|---|---|---|---|
+| `-c10 -d10` | `/` | 61 ms | 50 ms | ~199 | 2k / 10s | 0 | — |
+| `-c10 -d10` | `/api/health` | 68 ms | 47 ms | ~209 | 2k / 10s | 0 | ~85 MiB |
+| `-c20 -d15` | `/` | 71 ms | 49 ms | ~402 | 6k / 15s | 0 | — |
+| `-c20 -d15` | `/api/health` | 69 ms | 47 ms | ~422 | 6k / 15s | 0 | ~89 MiB |
+
+**Verdict: healthy.** Zero non-2xx / timeouts across ~16k requests; p99 stayed < 75 ms. Memory peaked
+**~89 MiB / 512 MiB (~17%)** — no OOM, no restart, recovers to ~68 MiB idle. CPU bursts to ~93% of one
+vCPU under 2× connections. Comfortable headroom on the shared host at this load.

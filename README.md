@@ -10,12 +10,16 @@
 git clone https://github.com/xdroberto/nova-analytics.git
 cd nova-analytics
 npm ci
+npm run prepare        # one-time: installs git hooks (skipped by ignore-scripts)
 cp .env.example .env   # fill BETTER_AUTH_SECRET (openssl rand -base64 32)
 docker compose -f docker-compose.dev.yml up -d
 npx drizzle-kit push --force
 npm run seed
 npm run dev            # http://localhost:3000
 ```
+
+> Supply-chain note: installs run with `ignore-scripts=true` (`.npmrc`) — dependency
+> lifecycle scripts never execute, in dev, CI, or the production image build.
 
 ## Auth
 
