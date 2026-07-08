@@ -48,13 +48,18 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-foreground-tertiary: var(--foreground-tertiary);
+  --color-foreground-faint: var(--foreground-faint);
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);
 }
 
-/* Default theme: Nova Analytics "aurora tech" (spec §4 — the single source of truth
-for brand color). Brand anchors: nova-void #0B0D1A · nova-indigo #5B5FEF ·
-nova-violet #8B5CF6 · nova-cyan #22D3EE · nova-starlight #F8FAFC · nova-green #34D399.
+/* Default theme: Nova Analytics "aurora tech" v2 (spec §4 + Phase 5.5 operator redesign —
+the single source of truth for brand color; palette derived from
+docs/design-reference/landing-v2.html). v2 brand anchors: nova-void #05060E ·
+nova-violet #6C5CE7 · nova-violet-light #7C6CF0 · nova-violet-deep #5646D6 ·
+nova-cyan #22D3EE · nova-green #34D399 · nova-starlight #E8EAF6. The dark theme IS the
+operator design; light keeps its base surfaces and adopts the violet brand accent.
 Used when no data-theme-preset is set or when 'default' is selected; there is no
 separate default.css file. */
 :root {
@@ -63,7 +68,7 @@ separate default.css file. */
   --card-foreground: oklch(0.155 0.033 266);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.155 0.033 266);
-  --primary: oklch(0.575 0.235 277); /* nova-indigo */
+  --primary: oklch(0.568 0.202 283); /* nova-violet v2 #6C5CE7 (brand accent, unified) */
   --primary-foreground: oklch(0.984 0.003 247.858); /* nova-starlight */
   --secondary: oklch(0.955 0.012 277);
   --secondary-foreground: oklch(0.31 0.09 277);
@@ -74,20 +79,25 @@ separate default.css file. */
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.91 0.012 260);
   --input: oklch(0.91 0.012 260);
-  --ring: oklch(0.575 0.235 277);
-  --chart-1: oklch(0.575 0.235 277); /* nova-indigo */
+  --ring: oklch(0.568 0.202 283); /* violet focus */
+  --chart-1: oklch(0.568 0.202 283); /* nova-violet v2 */
   --chart-2: oklch(0.715 0.143 215.221); /* nova-cyan (deepened for light bg) */
   --chart-3: oklch(0.606 0.25 292.717); /* nova-violet */
   --chart-4: oklch(0.696 0.17 162.48); /* nova-green (deepened for light bg) */
   --chart-5: oklch(0.45 0.08 270);
   --sidebar: oklch(0.972 0.006 255);
   --sidebar-foreground: oklch(0.155 0.033 266);
-  --sidebar-primary: oklch(0.575 0.235 277);
+  --sidebar-primary: oklch(0.568 0.202 283);
   --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
   --sidebar-accent: oklch(0.93 0.02 275);
   --sidebar-accent-foreground: oklch(0.31 0.09 277);
   --sidebar-border: oklch(0.91 0.012 260);
-  --sidebar-ring: oklch(0.575 0.235 277);
+  --sidebar-ring: oklch(0.568 0.202 283);
+
+  /* Secondary-text slate scale (Phase 5.5 v2 — new slots). Light values are derived
+     for light surfaces; the operator design itself is dark (see .dark). */
+  --foreground-tertiary: oklch(0.5 0.03 274);
+  --foreground-faint: oklch(0.62 0.03 274);
 
   /* fonts */
   --font-sans: var(--font-geist);
@@ -97,37 +107,43 @@ separate default.css file. */
 }
 
 .dark {
-  --background: oklch(0.155 0.033 266); /* nova-void */
-  --foreground: oklch(0.984 0.003 247.858); /* nova-starlight */
-  --card: oklch(0.205 0.04 268);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.205 0.04 268);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.511 0.262 276.966); /* nova-indigo deepened for WCAG AA on starlight text */
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.26 0.045 272);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.24 0.035 268);
-  --muted-foreground: oklch(0.72 0.025 262);
-  --accent: oklch(0.28 0.055 275);
-  --accent-foreground: oklch(0.984 0.003 247.858);
+  /* aurora-tech v2 — operator redesign (docs/design-reference/landing-v2.html).
+     Contrast pairs WCAG AA-verified (Phase 5.5): fg 16.9 · body 8.1 · #FFF-on-violet 4.86. */
+  --background: oklch(0.126 0.02 276); /* nova-void v2 #05060E */
+  --foreground: oklch(0.939 0.016 278); /* nova-starlight v2 #E8EAF6 */
+  --card: oklch(0.19 0.037 275); /* panel base #0F1224 (glass treatment lives in component) */
+  --card-foreground: oklch(0.939 0.016 278);
+  --popover: oklch(0.19 0.037 275);
+  --popover-foreground: oklch(0.939 0.016 278);
+  --primary: oklch(0.568 0.202 283); /* nova-violet v2 #6C5CE7 */
+  --primary-foreground: oklch(1 0 0); /* #FFF — WCAG AA 4.86 on violet (starlight=4.06 fails) */
+  --secondary: oklch(0.235 0.03 278); /* slate surface */
+  --secondary-foreground: oklch(0.939 0.016 278);
+  --muted: oklch(0.21 0.028 276);
+  --muted-foreground: oklch(0.721 0.053 274); /* slate-2 #9AA3C7 — AA 8.1 */
+  --accent: oklch(0.27 0.05 281); /* violet-tinted surface */
+  --accent-foreground: oklch(0.939 0.016 278);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.789 0.154 211.53); /* nova-cyan focus — aurora accent */
-  --chart-1: oklch(0.789 0.154 211.53); /* nova-cyan */
-  --chart-2: oklch(0.68 0.19 277); /* nova-indigo (lifted) */
-  --chart-3: oklch(0.709 0.159 293.541); /* nova-violet (lifted) */
-  --chart-4: oklch(0.765 0.177 163.223); /* nova-green */
-  --chart-5: oklch(0.85 0.06 260);
-  --sidebar: oklch(0.13 0.03 266); /* deeper void */
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.511 0.262 276.966);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.26 0.05 273);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.789 0.154 211.53);
+  --border: oklch(0.741 0.134 275.6 / 12%); /* lavender #94A3FF @12% (was plain white) */
+  --input: oklch(0.741 0.134 275.6 / 16%);
+  --ring: oklch(0.797 0.134 211.5); /* nova-cyan #22D3EE focus (conserved from v1) */
+  --chart-1: oklch(0.797 0.134 211.5); /* cyan */
+  --chart-2: oklch(0.613 0.191 285); /* violet-light #7C6CF0 */
+  --chart-3: oklch(0.568 0.202 283); /* violet #6C5CE7 */
+  --chart-4: oklch(0.773 0.153 163.2); /* green #34D399 */
+  --chart-5: oklch(0.785 0.104 275); /* lavender #A5B4FC */
+  --sidebar: oklch(0.1 0.018 276); /* deeper void */
+  --sidebar-foreground: oklch(0.939 0.016 278);
+  --sidebar-primary: oklch(0.568 0.202 283);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.235 0.04 281);
+  --sidebar-accent-foreground: oklch(0.939 0.016 278);
+  --sidebar-border: oklch(0.741 0.134 275.6 / 10%);
+  --sidebar-ring: oklch(0.797 0.134 211.5);
+
+  /* Secondary-text slate scale (v2 new slots) — dark = design values */
+  --foreground-tertiary: oklch(0.575 0.057 273.6); /* #6E779B — AA-fixed from #6B7499 (4.41→4.59) */
+  --foreground-faint: oklch(0.457 0.058 274); /* #4D5578 — marquee wordmarks, WCAG §1.4.3 exempt */
 }
 
 @layer base {

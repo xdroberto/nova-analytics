@@ -1,0 +1,145 @@
+/* Nova landing v2 — motion layer (Phase 5.5).
+ * CSS-first port of the operator design's nv* keyframes. Discipline: EVERY
+ * animation is gated behind `prefers-reduced-motion: no-preference`. The
+ * default (no-animation) state is always the FINAL, visible state — so a
+ * reduced-motion user sees a complete, static landing; motion is additive.
+ */
+
+@keyframes nvFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+@keyframes nvShine {
+  from {
+    background-position: 200% center;
+  }
+  to {
+    background-position: -200% center;
+  }
+}
+@keyframes nvPulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+@keyframes nvReveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes nvBar {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@keyframes nvLine {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes nvDot {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.4);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes nvAurora1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(80px, 40px) scale(1.15);
+  }
+  66% {
+    transform: translate(-60px, 20px) scale(0.95);
+  }
+}
+@keyframes nvAurora2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-100px, -50px) scale(1.2);
+  }
+}
+
+/* Decorative text shine — built from v2 chart tokens (lavender -> cyan). */
+.nv-shine {
+  background: linear-gradient(110deg, var(--chart-5) 20%, var(--chart-1) 45%, var(--chart-5) 70%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Reveal-on-enter — default is visible (reduced-motion safe). */
+.nv-reveal {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .nv-reveal {
+    opacity: 0;
+    animation: nvReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .nv-float {
+    animation: nvFloat 7s ease-in-out infinite;
+  }
+  .nv-shine {
+    animation: nvShine 6s linear infinite;
+  }
+  .nv-pulse {
+    animation: nvPulse 2.4s ease-in-out infinite;
+  }
+  .nv-aurora-1 {
+    animation: nvAurora1 22s ease-in-out infinite;
+  }
+  .nv-aurora-2 {
+    animation: nvAurora2 28s ease-in-out infinite;
+  }
+  .nv-bar {
+    transform-box: fill-box;
+    transform-origin: center bottom;
+    animation: nvBar 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  .nv-draw {
+    stroke-dasharray: 700;
+    stroke-dashoffset: 700;
+    animation: nvLine 1.6s 1s ease-out forwards;
+  }
+  .nv-dot {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: nvDot 0.4s backwards;
+  }
+}
