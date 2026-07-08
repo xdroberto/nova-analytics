@@ -114,6 +114,14 @@ decision (ADR-004), auditor pre-deploy gate.
   `--repo xdroberto/nova-analytics` (or `--base develop` on PRs) to target the fork.
 
 ## Decisions log (newest first)
+- 2026-07-08: **INFRA PIVOT (ADR-003 amended):** dedicated CPX11 no longer economical
+  (legacy ~$6.99 gone; new ~$21/mo ≈ 3×). Nova deploys to the EXISTING CPX11 at
+  178.156.248.110 (Ubuntu 24.04.4, also serving portfolio + sideeffects static +
+  moonhouse Python) with container isolation: hard mem limits (web ~512M, db ~384M),
+  2G swap (already active), restart policies. Operating rules: portfolio/sideeffects are
+  NEVER stopped; moonhouse pausable only with Roberto's explicit approval; builds stay
+  CI-only. DNS A nova.robertobh.dev → 178.156.248.110 verified (Cloudflare, DNS-only).
+  Isolation proposal awaiting Roberto's approval before any deploy action.
 - 2026-07-07: Phase 0 closed — canonical state live, 10 agent roles defined, CI skeleton green (1m16s).
 - 2026-07-07: Spike & stabilize for auth; auditor role added; capture-as-you-go evidence. (spec §5–§8)
 - 2026-07-07: Dedicated Hetzner CPX11 for hosting; builds only in CI; GHCR images. (ADR-003)
@@ -147,5 +155,5 @@ decision (ADR-004), auditor pre-deploy gate.
 - Deadline answer from employer (asked 2026-07-07)
 - Logo asset from Roberto (placeholder spark in use)
 - VPS credentials (Phase 4), DNS for `nova.robertobh.dev` (Phase 4), analytics pick (Phase 4)
-- **Plan gap noted:** ADR-001/002/003 are referenced (spec §7, decisions log) but no task creates the files.
-  Write `docs/adr/001-repo.md`, `002-auth.md`, `003-hosting.md` opportunistically (or in Phase 6 / Task 27).
+- ~~Plan gap: ADR files~~ RESOLVED — `docs/adr/001-base-repository.md`, `002-auth-stack.md`,
+  `003-hosting.md` written while waiting at the VPS gate (c5568eb). ADR-004 (analytics) pending Phase 4.
