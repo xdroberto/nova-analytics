@@ -1,31 +1,23 @@
-"use client";
+import { CalendarClock, ChevronRight, FileText } from "lucide-react";
 
-import { addDays, format, set } from "date-fns";
-import { ChevronRight, Zap } from "lucide-react";
-import { siClaude, siLinear, siResend } from "simple-icons";
-
-import { SimpleIcon } from "@/components/simple-icon";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle } from "@/components/ui/item";
 
-const transactions = [
+const scheduledReports = [
   {
     id: 1,
-    title: "Claude Pro Subscription",
-    date: format(set(addDays(new Date(), 2), { hours: 14, minutes: 45 }), "hh.mm a '•' MMMM dd, yyyy"),
-    icon: siClaude,
+    title: "Weekly Growth Digest",
+    schedule: "Every Monday • 09:00",
   },
   {
     id: 2,
-    title: "Resend Pro Team",
-    date: format(set(addDays(new Date(), 4), { hours: 7, minutes: 0 }), "hh.mm a '•' MMMM dd, yyyy"),
-    icon: siResend,
+    title: "Monthly Retention Report",
+    schedule: "1st of the month • 08:00",
   },
   {
     id: 3,
-    title: "Linear Plus Plan",
-    date: format(set(addDays(new Date(), 10), { hours: 7, minutes: 0 }), "hh.mm a '•' MMMM dd, yyyy"),
-    icon: siLinear,
+    title: "Funnel Alert Review",
+    schedule: "Every Friday • 17:00",
   },
 ];
 
@@ -33,38 +25,38 @@ export function UpcomingTransactions() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-normal">Upcoming Bills & Payments</CardTitle>
+        <CardTitle className="font-normal">Scheduled Reports</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-1">
-            <h2 className="flex items-baseline text-3xl leading-none tracking-tight">
-              <span className="font-normal">$1,245</span>
-              <span className="text-muted-foreground text-xl">.00</span>
+            <h2 className="flex items-baseline gap-1 text-3xl leading-none tracking-tight">
+              <span className="font-normal">3</span>
+              <span className="text-muted-foreground text-xl">active</span>
             </h2>
             <p className="text-muted-foreground text-sm leading-none">
-              You have <span className="font-medium text-foreground">3</span> bills due this month
+              <span className="font-medium text-foreground">3</span> reports run automatically this week
             </p>
           </div>
           <div className="flex w-max items-center gap-2 rounded-md border border-border bg-muted/70 px-2 py-1.5 text-sm">
-            <Zap className="size-4 fill-primary text-primary" />
+            <CalendarClock className="size-4 text-primary" />
             <span className="text-muted-foreground">
-              Autopay will process <span className="font-medium text-foreground">$145.00</span> today
+              Next run <span className="font-medium text-foreground">Growth Digest · Mon 09:00</span>
             </span>
           </div>
         </div>
 
         <ItemGroup>
-          {transactions.map((transaction) => (
-            <Item key={transaction.id} variant="outline" size="xs">
+          {scheduledReports.map((report) => (
+            <Item key={report.id} variant="outline" size="xs">
               <ItemMedia>
                 <div className="grid size-9 place-items-center rounded-md border bg-background">
-                  <SimpleIcon icon={transaction.icon} />
+                  <FileText className="size-4 text-muted-foreground" />
                 </div>
               </ItemMedia>
               <ItemContent>
-                <ItemTitle>{transaction.title}</ItemTitle>
-                <ItemDescription>{transaction.date}</ItemDescription>
+                <ItemTitle>{report.title}</ItemTitle>
+                <ItemDescription>{report.schedule}</ItemDescription>
               </ItemContent>
               <ItemActions>
                 <ChevronRight className="size-5 text-muted-foreground" />

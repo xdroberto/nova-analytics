@@ -7,105 +7,116 @@ import { Label, Pie, PieChart } from "recharts";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { formatCurrency } from "@/lib/utils";
 
-type BalanceKey = "investment" | "main" | "reserve" | "savings";
+type ProjectKey = "android" | "api" | "docs" | "ios" | "webapp";
 
-const balanceData: {
-  account: string;
+const projectData: {
+  project: string;
   amount: number;
-  key: BalanceKey;
+  key: ProjectKey;
   percentage: number;
 }[] = [
   {
-    account: "Main Wallet",
-    amount: 122_540,
-    key: "main",
+    project: "Web App",
+    amount: 4_510_000,
+    key: "webapp",
     percentage: 52.2,
   },
   {
-    account: "Savings Account",
-    amount: 48_320,
-    key: "savings",
+    project: "iOS App",
+    amount: 1_780_000,
+    key: "ios",
     percentage: 20.6,
   },
   {
-    account: "Investment Account",
-    amount: 36_780,
-    key: "investment",
+    project: "Android App",
+    amount: 1_360_000,
+    key: "android",
     percentage: 15.7,
   },
   {
-    account: "Reserve Account",
-    amount: 27_256,
-    key: "reserve",
-    percentage: 11.5,
+    project: "Public API",
+    amount: 860_000,
+    key: "api",
+    percentage: 10.0,
+  },
+  {
+    project: "Docs/Marketing Site",
+    amount: 130_000,
+    key: "docs",
+    percentage: 1.5,
   },
 ];
 
 const chartConfig = {
   amount: {
-    label: "Balance",
+    label: "Events",
   },
-  investment: {
+  webapp: {
     color: "var(--chart-1)",
-    label: "Investment Account",
+    label: "Web App",
   },
-  main: {
+  ios: {
     color: "var(--chart-2)",
-    label: "Main Wallet",
+    label: "iOS App",
   },
-  reserve: {
+  android: {
     color: "var(--chart-3)",
-    label: "Reserve Account",
+    label: "Android App",
   },
-  savings: {
+  api: {
     color: "var(--chart-4)",
-    label: "Savings Account",
+    label: "Public API",
+  },
+  docs: {
+    color: "var(--chart-5)",
+    label: "Docs/Marketing Site",
   },
 } satisfies ChartConfig;
 
-const currencies = {
-  EUR: {
-    label: "Euro Balance",
+const windows = {
+  "7d": {
+    label: "Last 7 days",
   },
-  GBP: {
-    label: "GBP Balance",
+  "30d": {
+    label: "Last 30 days",
   },
-  USD: {
-    label: "USD Balance",
+  "90d": {
+    label: "Last 90 days",
   },
 } as const;
 
-type Currency = keyof typeof currencies;
+type TimeWindow = keyof typeof windows;
 
-const getAccountColor = (key: BalanceKey) => {
+const getProjectColor = (key: ProjectKey) => {
   const config = chartConfig[key];
 
   return "color" in config ? config.color : undefined;
 };
 
-const chartData = balanceData.map((item) => ({
+const chartData = projectData.map((item) => ({
   ...item,
-  fill: getAccountColor(item.key),
+  fill: getProjectColor(item.key),
 }));
-const totalBalance = balanceData.reduce((total, item) => total + item.amount, 0);
+const totalEvents = projectData.reduce((total, item) => total + item.amount, 0);
+
+const formatEvents = (value: number) => `${(value / 1_000_000).toFixed(2)}M`;
 
 export function BalanceDistributionCard() {
-  const [currency, setCurrency] = React.useState<Currency>("USD");
+  const [timeWindow, setTimeWindow] = React.useState<TimeWindow>("30d");
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-normal">Account Allocation</CardTitle>
+        <CardTitle className="font-normal">Events by Project</CardTitle>
         <CardAction>
-          <Select onValueChange={(value) => setCurrency(value as Currency)} value={currency}>
+          <Select onValueChange={(value) => setTimeWindow(value as TimeWindow)} value={timeWindow}>
             <SelectTrigger className="w-36" size="sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {Object.entries(currencies).map(([value, item]) => (
+                {Object.entries(windows).map(([value, item]) => (
                   <SelectItem key={value} value={value}>
                     {item.label}
                   </SelectItem>
@@ -121,14 +132,14 @@ export function BalanceDistributionCard() {
           <PieChart>
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel className="w-52" nameKey="account" />}
+              content={<ChartTooltipContent hideLabel className="w-52" nameKey="project" />}
             />
             <Pie
               cornerRadius={6}
               data={chartData}
               dataKey="amount"
               innerRadius={65}
-              nameKey="account"
+              nameKey="project"
               outerRadius={90}
               paddingAngle={2}
               strokeWidth={5}
@@ -149,7 +160,7 @@ export function BalanceDistributionCard() {
                         x={viewBox.cx}
                         y={(viewBox.cy ?? 0) + 14}
                       >
-                        {formatCurrency(totalBalance, { currency, noDecimals: true })}
+                        {formatEvents(totalEvents)}
                       </tspan>
                     </text>
                   );
@@ -165,11 +176,9 @@ export function BalanceDistributionCard() {
               <div className="min-w-0">
                 <div className="flex min-w-0 items-center gap-1">
                   <span aria-hidden="true" className="h-2 w-1 rounded-full" style={{ backgroundColor: item.fill }} />
-                  <p className="truncate text-muted-foreground text-xs">{item.account}</p>
+                  <p className="truncate text-muted-foreground text-xs">{item.project}</p>
                 </div>
-                <p className="font-medium tabular-nums">
-                  {formatCurrency(item.amount, { currency, noDecimals: true })}
-                </p>
+                <p className="font-medium tabular-nums">{formatEvents(item.amount)}</p>
               </div>
               <div className="font-medium tabular-nums">{item.percentage}%</div>
             </div>

@@ -1,4 +1,4 @@
-import { ArrowDownRight, ArrowUpRight, Ellipsis } from "lucide-react";
+import { ArrowUpRight, Ellipsis } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,16 +16,16 @@ export function AnalyticsKpiStrip() {
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div className="flex items-center justify-between gap-4">
-              <div className="text-2xl leading-none tracking-tight">213.1k</div>
+              <div className="text-2xl leading-none tracking-tight">156.2k</div>
               <Badge className="bg-green-500/10 text-green-700 dark:bg-green-500/15 dark:text-green-300">
                 <ArrowUpRight />
-                2.8%
+                11.8%
               </Badge>
             </div>
 
             <div className="flex items-center gap-2 text-muted-foreground text-xs">
               <span>
-                from <span className="text-foreground">207.3k</span>
+                from <span className="text-foreground">139.75k</span>
               </span>
               <span>•</span>
               <span>last 4 weeks</span>
@@ -42,16 +42,16 @@ export function AnalyticsKpiStrip() {
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div className="flex items-center justify-between gap-4">
-              <div className="text-2xl leading-none tracking-tight">248.6k</div>
+              <div className="text-2xl leading-none tracking-tight">512.9k</div>
               <Badge className="bg-green-500/10 text-green-700 dark:bg-green-500/15 dark:text-green-300">
                 <ArrowUpRight />
-                2.1%
+                11.2%
               </Badge>
             </div>
 
             <div className="flex items-center gap-2 text-muted-foreground text-xs">
               <span>
-                from <span className="text-foreground">243.5k</span>
+                from <span className="text-foreground">461.24k</span>
               </span>
               <span>•</span>
               <span>last 4 weeks</span>
@@ -68,16 +68,16 @@ export function AnalyticsKpiStrip() {
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div className="flex items-center justify-between gap-4">
-              <div className="text-2xl leading-none tracking-tight">547.9k</div>
-              <Badge className="bg-destructive/10 text-destructive">
-                <ArrowDownRight />
-                3.3%
+              <div className="text-2xl leading-none tracking-tight">1.86M</div>
+              <Badge className="bg-green-500/10 text-green-700 dark:bg-green-500/15 dark:text-green-300">
+                <ArrowUpRight />
+                9.4%
               </Badge>
             </div>
 
             <div className="flex items-center gap-2 text-muted-foreground text-xs">
               <span>
-                from <span className="text-foreground">566.8k</span>
+                from <span className="text-foreground">1.70M</span>
               </span>
               <span>•</span>
               <span>last 4 weeks</span>
@@ -94,16 +94,16 @@ export function AnalyticsKpiStrip() {
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div className="flex items-center justify-between gap-4">
-              <div className="text-2xl leading-none tracking-tight">61.4%</div>
+              <div className="text-2xl leading-none tracking-tight">62.4%</div>
               <Badge className="bg-green-500/10 text-green-700 dark:bg-green-500/15 dark:text-green-300">
                 <ArrowUpRight />
-                4.2%
+                3.1pp
               </Badge>
             </div>
 
             <div className="flex items-center gap-2 text-muted-foreground text-xs">
               <span>
-                from <span className="text-foreground">58.9%</span>
+                from <span className="text-foreground">59.3%</span>
               </span>
               <span>•</span>
               <span>last 4 weeks</span>
@@ -120,16 +120,16 @@ export function AnalyticsKpiStrip() {
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div className="flex items-center justify-between gap-4">
-              <div className="text-2xl leading-none tracking-tight">8.4%</div>
-              <Badge className="bg-destructive/10 text-destructive">
-                <ArrowDownRight />
-                5.6%
+              <div className="text-2xl leading-none tracking-tight">4.8%</div>
+              <Badge className="bg-green-500/10 text-green-700 dark:bg-green-500/15 dark:text-green-300">
+                <ArrowUpRight />
+                0.4pp
               </Badge>
             </div>
 
             <div className="flex items-center gap-2 text-muted-foreground text-xs">
               <span>
-                from <span className="text-foreground">8.9%</span>
+                from <span className="text-foreground">4.4%</span>
               </span>
               <span>•</span>
               <span>last 4 weeks</span>

@@ -1,37 +1,35 @@
 import {
-  Banknote,
+  BellPlus,
   ChevronRight,
-  Droplet,
-  History,
-  Lightbulb,
+  Download,
+  FilePlus2,
+  LayoutDashboard,
   MoreHorizontal,
-  QrCode,
-  SendHorizontal,
-  Smartphone,
+  Share2,
+  UserPlus,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field } from "@/components/ui/field";
-import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group";
+import { InputGroup, InputGroupInput } from "@/components/ui/input-group";
 
-const contacts = [
-  { id: 1, initials: "AR" },
-  { id: 2, initials: "SC" },
-  { id: 3, initials: "MJ" },
-  { id: 4, initials: "ED" },
+const teammates = [
+  { id: 1, initials: "OR" },
+  { id: 2, initials: "PB" },
+  { id: 3, initials: "LS" },
+  { id: 4, initials: "CW" },
 ];
 
 const shortcuts = [
-  { id: 1, label: "Scan QR", icon: QrCode },
-  { id: 2, label: "Transfer", icon: SendHorizontal },
-  { id: 3, label: "Pay Bills", icon: Banknote },
-  { id: 4, label: "History", icon: History },
-  { id: 5, label: "Mobile", icon: Smartphone },
-  { id: 6, label: "Electricity", icon: Lightbulb },
-  { id: 7, label: "Water", icon: Droplet },
-  { id: 8, label: "More", icon: MoreHorizontal },
+  { id: 1, label: "Create report", icon: FilePlus2 },
+  { id: 2, label: "Set alert", icon: BellPlus },
+  { id: 3, label: "Export CSV", icon: Download },
+  { id: 4, label: "Share", icon: Share2 },
+  { id: 5, label: "Invite", icon: UserPlus },
+  { id: 6, label: "Dashboard", icon: LayoutDashboard },
+  { id: 7, label: "More", icon: MoreHorizontal },
 ];
 
 export function QuickActions() {
@@ -39,13 +37,13 @@ export function QuickActions() {
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle className="font-normal">Quick Transfer</CardTitle>
+          <CardTitle className="font-normal">Invite teammate</CardTitle>
           <CardAction>
             <div className="flex items-center gap-1">
               <div className="flex -space-x-2">
-                {contacts.map((contact) => (
-                  <Avatar key={contact.id} className="size-7 border-2 border-background">
-                    <AvatarFallback className="text-[10px]">{contact.initials}</AvatarFallback>
+                {teammates.map((teammate) => (
+                  <Avatar key={teammate.id} className="size-7 border-2 border-background">
+                    <AvatarFallback className="text-[10px]">{teammate.initials}</AvatarFallback>
                   </Avatar>
                 ))}
               </div>
@@ -56,22 +54,16 @@ export function QuickActions() {
         <CardContent>
           <Field orientation="horizontal">
             <InputGroup>
-              <InputGroupAddon>
-                <InputGroupText>$</InputGroupText>
-              </InputGroupAddon>
-              <InputGroupInput placeholder="0.00" />
-              <InputGroupAddon align="inline-end">
-                <InputGroupText>USD</InputGroupText>
-              </InputGroupAddon>
+              <InputGroupInput placeholder="teammate@novaanalytics.io" />
             </InputGroup>
-            <Button>Send</Button>
+            <Button>Invite</Button>
           </Field>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-normal">Shortcuts</CardTitle>
+          <CardTitle className="font-normal">Quick actions</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-4 gap-4">

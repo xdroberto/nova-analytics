@@ -7,9 +7,9 @@ import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle }
 import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Separator } from "@/components/ui/separator";
 
-const chartData = [{ month: "current", "in-stock": 760, "low-stock": 320, "out-of-stock": 160 }];
+const chartData = [{ month: "current", "in-stock": 8_614_080, "low-stock": 17_280, "out-of-stock": 8_640 }];
 const totalUnits = chartData[0]["in-stock"] + chartData[0]["low-stock"] + chartData[0]["out-of-stock"];
-const availablePercent = Math.round((chartData[0]["in-stock"] / totalUnits) * 100);
+const availablePercent = ((chartData[0]["in-stock"] / totalUnits) * 100).toFixed(1);
 const gaugeSegmentCount = 32;
 const inStockSegments = Math.round((chartData[0]["in-stock"] / totalUnits) * gaugeSegmentCount);
 const lowStockSegments = Math.round((chartData[0]["low-stock"] / totalUnits) * gaugeSegmentCount);
@@ -38,32 +38,32 @@ const gaugeSegments = Array.from({ length: gaugeSegmentCount }, (_, index) => {
 const inventorySummary = [
   {
     icon: PackageCheck,
-    label: "In stock",
+    label: "Delivered",
     value: chartData[0]["in-stock"],
   },
   {
     icon: TriangleAlert,
-    label: "Low stock",
+    label: "Delayed",
     value: chartData[0]["low-stock"],
   },
   {
     icon: PackageX,
-    label: "Out",
+    label: "Failed",
     value: chartData[0]["out-of-stock"],
   },
 ] as const;
 
 const chartConfig = {
   "in-stock": {
-    label: "In stock",
+    label: "Delivered",
     color: "var(--chart-2)",
   },
   "low-stock": {
-    label: "Low stock",
+    label: "Delayed",
     color: "var(--chart-1)",
   },
   "out-of-stock": {
-    label: "Out of stock",
+    label: "Failed",
     color: "var(--destructive)",
   },
 } satisfies ChartConfig;
@@ -72,9 +72,9 @@ export function Inventory() {
   return (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle className="font-normal text-muted-foreground text-sm">Inventory</CardTitle>
+        <CardTitle className="font-normal text-muted-foreground text-sm">Data Delivery Health</CardTitle>
         <CardDescription className="text-foreground text-xl tabular-nums leading-none tracking-tight">
-          {availablePercent}% available
+          {availablePercent}% delivered
         </CardDescription>
         <CardAction>
           <ArrowUpRight className="size-4" />
@@ -110,7 +110,7 @@ export function Inventory() {
                           {availablePercent}%
                         </tspan>
                         <tspan className="fill-muted-foreground text-xs" x={viewBox.cx} y={(viewBox.cy || 0) + 38}>
-                          Available
+                          Delivered
                         </tspan>
                       </text>
                     );
