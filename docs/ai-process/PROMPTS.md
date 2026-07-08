@@ -70,3 +70,20 @@ reviewer was re-tasked via message with the new diff scope and a hunt list targe
 diff's real risks: font-switcher breakage from preload changes, stale persisted font
 preferences, dark-wrapper vs theme-boot collision, e2e locator fragility. Result: 4 MINOR
 (3 fixed, 1 explicitly accepted as a documented product decision) + 1 NIT.
+
+## Phase 4 — Deploy
+
+**devops (Lead wearing the hat):** measure before touching a shared host — `free -h`,
+`docker stats`, `df -h`, nginx sites — then propose an isolation plan (mem_limits, standalone
+Postgres, swap, nginx+TLS) for the owner's approval before executing. Truth over instructions:
+recorded the real OS (Ubuntu 24.04.4) over the owner's stated 26.04. Every host mutation was
+additive/reversible; the owner's other sites were never touched.
+
+**reviewer (adversarial) — PR #4 (deploy stack):** hunt list on the CD pipeline's real
+failure modes: rollback story, GHCR auth, ADR self-consistency, reboot startup ordering,
+Dockerfile non-root writes, health-check caching, nginx proxy headers. Result: 4 MAJOR + 4
+MINOR + NIT. Notable: the Lead independently reproduced the WCAG/contrast-style math and, for
+MAJOR-4 (startup ordering), REJECTED the suggested wait-for-DB with a reasoned trade-off
+(it would delay the DB-independent landing) — receiving review with rigor, not compliance.
+The rollback fix later caught a real latent bug in practice (the `*.sh` gitignore trap had
+left `deploy/remote-deploy.sh` untracked; the first CD run failed harmlessly at scp).
