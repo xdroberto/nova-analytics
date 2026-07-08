@@ -10,10 +10,21 @@
   and DNS A record `nova.robertobh.dev` → VPS IP.
 
 ## Immediate next step
-Task 20 on `feature/deploy` (no Roberto needed): `output: "standalone"` in next.config.mjs
-(+ set `turbopack.root`/`outputFileTracingRoot` — the stray C:\Users\xdrob\package-lock.json
-workspace-root issue noted in Phase 0), production Dockerfile + .dockerignore, local
-docker-build proof. Then WAIT for VPS credentials (Task 21 gate).
+**WAITING ON ROBERTO (Task 21 gate):** Hetzner CPX11 (Ubuntu 24.04, SSH key) + its IP,
+then DNS A record `nova.robertobh.dev` → that IP.
+
+Already DONE on `feature/deploy` (repo side of Tasks 20/22/23, all verified locally):
+- Task 20 ✅ standalone output + workspace-root fix; multi-stage Dockerfile (no public/
+  dir in this repo — icons ship via src/app conventions); image built + container served
+  / and /login (200).
+- /api/health ✅ verified both paths (200 ok db-up · 503 degraded db-down).
+- deploy/docker-compose.prod.yml (ghcr.io/xdroberto/nova-analytics:latest, db volume,
+  127.0.0.1-only web port) + deploy/nginx-nova.conf + .github/workflows/deploy.yml
+  (needs secrets VPS_HOST + VPS_SSH_KEY once the VPS exists).
+Remaining once VPS arrives: harden + install (Task 21 step 2 script), prod .env on the VPS
+(chmod 600, NEW BETTER_AUTH_SECRET + POSTGRES_PASSWORD), nginx + certbot, first manual
+deploy + migrations + seed, secrets in GitHub, push-to-deploy demo, UptimeRobot, analytics
+decision (ADR-004), auditor pre-deploy gate.
 
 ## Phase 2 review outcome (PR #2 — MERGE AFTER FIXES; all applied + verified)
 - FIXED MAJOR-1: branding gate was fail-open (grep exit 2 ≡ "clean"); now fails closed
