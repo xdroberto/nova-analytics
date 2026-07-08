@@ -4,14 +4,24 @@
 > every significant action, (4) never reconstruct state from chat memory.
 
 ## Current position
-- Phase: 3 ✅ CLOSED (PR #3 merged at 6cd239e; Lighthouse 94 mobile / 100 desktop; e2e 4/4).
-- Phase 4 (Deploy) OPEN — next: Task 20 (production Dockerfile + standalone output).
-- Blockers: **Tasks 21–22 need Roberto** — Hetzner CPX11 creation (Ubuntu 24.04, SSH key)
-  and DNS A record `nova.robertobh.dev` → VPS IP.
+- Phase: 4 (Deploy) — **SITE IS LIVE** at https://nova.robertobh.dev (TLS, health ok, auth works).
+  First manual deploy done; remaining: push-to-deploy wiring, monitoring, analytics, audit gate.
+- Blockers: **paused for Roberto to see the live site** before wiring push-to-deploy.
 
 ## Immediate next step
-**WAITING ON ROBERTO (Task 21 gate):** Hetzner CPX11 (Ubuntu 24.04, SSH key) + its IP,
-then DNS A record `nova.robertobh.dev` → that IP.
+**LIVE at https://nova.robertobh.dev** (first manual deploy done 2026-07-08). STOPPED before
+wiring push-to-deploy, per Roberto — awaiting his OK after he sees the live site.
+Remaining Phase 4 once he greenlights:
+1. Wire push-to-deploy: `gh secret set VPS_HOST/VPS_USER/VPS_SSH_KEY` (dedicated deploy key),
+   then a develop→main merge demonstrates end-to-end auto-deploy 🎥.
+2. UptimeRobot on https://nova.robertobh.dev/api/health (5-min, email Roberto).
+3. Analytics decision → ADR-004.
+4. Auditor pre-deploy gate: **security headers are MISSING in prod** (verified: no HSTS/
+   X-Frame/X-Content-Type/Referrer-Policy) → add via next.config headers(); plus `npm audit`,
+   secrets-in-history scan, rate-limit check. Then close Phase 4.
+Live facts: web 49MB/512MB, postgres 38MB/384MB. __Secure cookie confirmed on HTTPS.
+Reviewer creds admin@novaanalytics.io / NovaReview2026! are live+public (in repo) — fine for
+review; rotate at Task 29 (SUBMISSION).
 
 Already DONE on `feature/deploy` (repo side of Tasks 20/22/23, all verified locally):
 - Task 20 ✅ standalone output + workspace-root fix; multi-stage Dockerfile (no public/

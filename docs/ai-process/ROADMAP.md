@@ -31,3 +31,5 @@
 | 2026-07-07 | Phase 1 closed: auth merged after adversarial review; e2e green in CI | dac7bd1 |
 | 2026-07-07 | Phase 2 closed: full whitelabel, CI branding gate enforcing zero hits | 1e6a511 |
 | 2026-07-07 | Phase 3 closed: landing live locally — Lighthouse 94 mobile / 100 desktop | 6cd239e |
+| 2026-07-08 | Infra pivot: reuse existing CPX11 with container isolation (ADR-003 amended) | b2977a7 |
+| 2026-07-08 | FIRST LIVE DEPLOY — https://nova.robertobh.dev up (TLS, health ok, Secure cookie, signup/login) | 67f9382 |
