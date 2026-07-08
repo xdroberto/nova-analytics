@@ -19,8 +19,8 @@
 | 2 | Whitelabel | ✅ | Branding grep = 0 hits, CI-enforced | 1e6a511 |
 | 3 | Landing | ✅ | Lighthouse ≥90 mobile; CTA→signup works | 6cd239e |
 | 4 | Deploy | ✅ | Public HTTPS + push-to-deploy + audit gate + uptime monitoring (UptimeRobot **LIVE**) | af6625c |
-| 5 | Hardening | ⬜ | Full suite green in CI; review findings fixed; **security bypass suite green** (no-cookie / invalid / expired → deny·redirect; auth rate-limit responds) | — |
-| 5.5 | UI/UX polish & diagrams | ⬜ | (1) Mermaid diagram suite renders on GitHub — architecture · DB ERD · auth flow · CI/CD · VPS topology · git flow; (2) dashboard responsive audit passes @360/375/768/1024/1440 (no h-overflow, e2e-backed); (3) micro-interaction polish batch approved by Roberto via screenshots BEFORE merge | — |
+| 5 | Hardening | ✅ | Full suite green in CI; review findings fixed; **security bypass suite green** (no-cookie / invalid / expired → deny·redirect; auth rate-limit responds) | b531e52 |
+| 5.5 | UI/UX polish & diagrams | 🔄 | (1) ✅ Mermaid diagram suite renders on GitHub (6 diagrams, verified); (2) ⬜ dashboard responsive audit @360/375/768/1024/1440 (deferred to after the new landing lands); (3) ⬜ micro-interaction polish approved by Roberto via screenshots BEFORE merge | — |
 | 6 | Delivery | ⬜ | PRD checklist 100% + final audit gate | — |
 
 ## Milestone log
@@ -37,3 +37,5 @@
 | 2026-07-08 | Phase 4 closed: push-to-deploy demoed end-to-end (rollback-safe CD), security headers live, audit gate passed | af6625c |
 | 2026-07-08 | Phase 4 promoted to production (PR #6 develop→main); push-to-deploy verified from merge (~3m09s), health ok | 4325946 |
 | 2026-07-08 | UptimeRobot monitor LIVE (/api/health · 5-min · email + SSL-expiry) — **Phase 4 FULLY CLOSED** | 4325946 |
+| 2026-07-08 | **Phase 5 CLOSED + promoted to production** (PR #7 develop→main, 19 commits); adversarial review 1 HIGH fixed; deploy success, health ok | b531e52 |
+| 2026-07-08 | Phase 5.5 (1/3): Mermaid diagram suite (6) in docs/architecture.md — verified rendering on GitHub | 8c0acb0 |

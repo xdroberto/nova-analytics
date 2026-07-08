@@ -4,11 +4,14 @@
 > every significant action, (4) never reconstruct state from chat memory.
 
 ## Current position
-- Phase: 4 (Deploy) ✅ **FULLY CLOSED** (promoted to main via PR #6 = merge 4325946; UptimeRobot monitor
-  now live). **LIVE at https://nova.robertobh.dev** — TLS, health ok, auth works, security headers live,
-  push-to-deploy verified end-to-end from a PR merge (~3m09s: build-push 2m46s + deploy 16s).
-- Next: **Phase 5 (Hardening)** — Vitest units, cross-browser/mobile QA matrix, adversarial review; plus
-  the queued repo-hygiene batch (see backlog) + repo/landing/README polish.
+- Phase: **5 (Hardening) ✅ CLOSED + LIVE in production** (promoted via PR #7 = merge b531e52; deploy
+  success, health ok). Shipped: Vitest + `evaluateHealth`, the security bypass suite, explicit Better Auth
+  rate limiting, supply-chain `ignore-scripts`, Node-22 toolchain pin, and an adversarial review (1 HIGH
+  auth bypass — orphaned /chat + /mail — fixed). **LIVE at https://nova.robertobh.dev.**
+- Now: **Phase 5.5 (UI/UX & diagrams) — PARALLEL TRACKS** (see the ⚡ section above). THIS session: diagram
+  suite ✅ DONE (6, verified rendering on GitHub); responsive audit @5 breakpoints DEFERRED until the new
+  landing lands; integration duty = review/merge the UI session's PR. UI session runs on
+  `feature/ui-landing-polish` (aurora-tech v2 + landing, screenshot-gated).
 - Session note: a fresh session boots from ROADMAP→BRAIN→latest SESSION-LOG with zero chat context.
 
 ## ✅ Commitlint gate — first live run RESOLVED (PR #6)
