@@ -27,6 +27,7 @@
 | auditor | Independent milestone audits — never the Lead auditing itself (macro scope: is the system right?). Two scheduled gates: **pre-deploy** (Phase 4: leaked secrets, security headers, cookie flags, rate limiting, `npm audit`, OWASP basics — leverages the local `/audit` skill) and **pre-submission** (Phase 6: PRD checklist 100%, branding grep, licenses, test credentials work, all submission links live) |
 | devops | VPS provisioning, Docker, Nginx, TLS, CI/CD, monitoring |
 | docs-writer | README, ADRs, process docs, submission package |
+| repo-steward | Owns the repo as a graded deliverable: conventional-commit standards (commitlint CI gate on the PR range only), branch hygiene, `.gitignore` correctness (no important file swallowed, no secrets tracked), CHANGELOG. Adversarial about cleanliness. **Advises** on merges; the Lead stays sole merger. **Added mid-project (Phase 4)** — an adaptive-process response to a self-review gap: distributed ownership let two repo-hygiene slips through (36 unpruned inherited branches; a deploy script swallowed by the `*.sh` gitignore rule). The role converts good intentions into a mechanical CI gate. |
 
 **Handoff protocol (mandatory):** every task closes with (1) BRAIN updated, (2) 3-line summary — did / verified / next, (3) tests green, (4) **evidence captured** when the task is a key moment (short terminal clip or screenshot into `evidence/` — see §7).
 **Git flow:** `main` (deployable) ← `develop` ← `feature/*`; conventional, descriptive commits in English; each phase = internal PR reviewed by `reviewer`.

@@ -4,6 +4,20 @@ on:
     branches: [main, develop]
   pull_request:
 jobs:
+  commits:
+    # repo-steward gate: conventional-commit check on the PR's OWN commits only.
+    # Scoped to base..head via the SHAs GitHub provides — NEVER the full/inherited
+    # upstream history (which is non-conventional and would fail on ancestry).
+    # Runs on PRs only; the merge-ref checkout + fetch-depth 0 makes both SHAs reachable.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
   quality:
     runs-on: ubuntu-latest
     steps:

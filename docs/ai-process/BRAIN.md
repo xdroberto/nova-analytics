@@ -162,6 +162,14 @@ decision (ADR-004), auditor pre-deploy gate.
   `--repo xdroberto/nova-analytics` (or `--base develop` on PRs) to target the fork.
 
 ## Decisions log (newest first)
+- 2026-07-08: **repo-steward role added (Phase 4, adaptive process).** Two repo-hygiene slips
+  (36 unpruned inherited branches; `deploy/remote-deploy.sh` swallowed by the `*.sh` gitignore,
+  fixed 171fc1e) → new role owns the repo as a graded deliverable with MECHANICAL enforcement:
+  a commitlint CI gate (`commits` job, PR-range only via base..head SHAs, never inherited
+  history — verified locally: passes our conventional commits, correctly rejects the two
+  `feat(x)+docs` commits). Role advises on merges; Lead stays sole merger. Branch-pruning of
+  the 36 inherited branches is the role's FIRST task, deferred to its own dedicated session
+  (do NOT prune ad hoc).
 - 2026-07-08: **INFRA PIVOT (ADR-003 amended):** dedicated CPX11 no longer economical
   (legacy ~$6.99 gone; new ~$21/mo ≈ 3×). Nova deploys to the EXISTING CPX11 at
   178.156.248.110 (Ubuntu 24.04.4, also serving portfolio + sideeffects static +
