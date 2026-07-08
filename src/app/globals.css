@@ -210,9 +210,6 @@ separate default.css file. */
   html[data-font="geistMono"] body {
     --font-sans: var(--font-geist-mono);
   }
-  html[data-font="geistPixelSquare"] body {
-    --font-sans: var(--font-geist-pixel-square);
-  }
   html[data-font="jetBrainsMono"] body {
     --font-sans: var(--font-jetbrains-mono);
   }

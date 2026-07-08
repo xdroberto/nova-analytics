@@ -18,20 +18,21 @@ import {
   Roboto_Slab,
 } from "next/font/google";
 
-import { GeistPixelSquare } from "geist/font/pixel";
-
 const inter = Inter({
   subsets: ["latin"],
+  preload: false,
   variable: "--font-inter",
 });
 
 const notoSans = Noto_Sans({
   subsets: ["latin"],
+  preload: false,
   variable: "--font-noto-sans",
 });
 
 const roboto = Roboto({
   subsets: ["latin"],
+  preload: false,
   weight: ["400", "500", "700"],
   variable: "--font-roboto",
 });
@@ -43,67 +44,80 @@ const geist = Geist({
 
 const outfit = Outfit({
   subsets: ["latin"],
+  preload: false,
   variable: "--font-outfit",
 });
 
 const geistMono = Geist_Mono({
   subsets: ["latin"],
+  preload: false,
   variable: "--font-geist-mono",
 });
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
+  preload: false,
   variable: "--font-dm-sans",
 });
 
 const nunitoSans = Nunito_Sans({
   subsets: ["latin"],
+  preload: false,
   variable: "--font-nunito-sans",
 });
 
 const figtree = Figtree({
   subsets: ["latin"],
+  preload: false,
   variable: "--font-figtree",
 });
 
 const raleway = Raleway({
   subsets: ["latin"],
+  preload: false,
   variable: "--font-raleway",
 });
 
 const publicSans = Public_Sans({
   subsets: ["latin"],
+  preload: false,
   variable: "--font-public-sans",
 });
 
 const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
+  preload: false,
   variable: "--font-jetbrains-mono",
 });
 
 const notoSerif = Noto_Serif({
   subsets: ["latin"],
+  preload: false,
   variable: "--font-noto-serif",
 });
 
 const robotoSlab = Roboto_Slab({
   subsets: ["latin"],
+  preload: false,
   variable: "--font-roboto-slab",
 });
 
 const merriweather = Merriweather({
   subsets: ["latin"],
+  preload: false,
   weight: ["400", "700"],
   variable: "--font-merriweather",
 });
 
 const lora = Lora({
   subsets: ["latin"],
+  preload: false,
   variable: "--font-lora",
 });
 
 const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
+  preload: false,
   variable: "--font-playfair-display",
 });
 
@@ -151,10 +165,6 @@ export const fontRegistry = {
   geistMono: {
     label: "Geist Mono",
     font: geistMono,
-  },
-  geistPixelSquare: {
-    label: "Geist Pixel Square",
-    font: GeistPixelSquare,
   },
   jetBrainsMono: {
     label: "JetBrains Mono",
