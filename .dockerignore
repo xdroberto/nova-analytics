@@ -1,0 +1,17 @@
+node_modules
+.next
+.git
+.env*
+e2e
+test-results
+playwright-report
+docs
+evidence
+media
+.claude
+.github
+docker-compose*.yml
+deploy
+README.md
+AGENTS.md
+CLAUDE.md
