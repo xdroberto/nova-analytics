@@ -23,8 +23,9 @@
 .DS_Store
 *.pem
 *.sh
-# repo scripts are tracked (exception to *.sh above)
+# repo scripts are tracked (exceptions to *.sh above)
 !scripts/*.sh
+!deploy/*.sh
 
 # debug
 npm-debug.log*
