@@ -20,12 +20,22 @@
   conventional-commits-parser@6.4.0"). Fixed by regenerating with npm 10 (`fix(deps)` 4bc3d81).
   See Decisions log + the Phase-5 hygiene backlog (node/npm pin, to prevent recurrence).
 
+## 🎨 Parallel UI session (Phase 5.5 — landing redesign) — ACTIVE
+A separate UI/UX session runs the landing redesign on branch `feature/ui-landing-polish` in an
+**isolated git worktree** (`../nova-analytics-landing`, off origin/develop). Scope: ONLY
+`src/app/(marketing)/**`, design tokens (`src/app/globals.css`), design-reference evidence, and this
+note. It does NOT touch auth/proxy/deploy/CI/scripts. Foundation = aurora-tech **v2** tokens (operator
+design, see Decisions log). Screenshot-gated per batch; integration + promotion are the Lead's/Roberto's.
+The Lead's Phase-5 work on `develop` proceeds independently (no app-code overlap by construction).
+
 ## ⚖ ui-ux-pro-max skill — HARD RULES (installed 2026-07-08, for Phase 5.5 only)
 Installed globally (`~/.claude/skills/ui-ux-pro-max`, MIT, nextlevelbuilder) as a **read-only knowledge
 base**. Its front-matter auto-triggers broadly and WILL offer its 161 palettes / 57 font pairings /
 "design systems" — **those are OFF-LIMITS for Nova.** Non-negotiable:
-1. **Nova's aurora-tech design tokens are LAW.** The skill NEVER introduces a new palette, font, style, or
-   design-system; ignore every color/typography/style output it produces.
+1. **Nova's aurora-tech v2 design tokens are LAW** (operator redesign, Phase 5.5 — palette extracted from
+   `docs/design-reference/landing-v2.html`, single source of truth in `src/app/globals.css`). The skill
+   NEVER introduces a new palette, font, style, or design-system; ignore every color/typography/style
+   output it produces.
 2. **Consult ONLY for:** UX guideline checklists, dashboard chart-type selection guidance, WCAG/contrast +
    interaction-timing rules, and anti-pattern lists. Knowledge only — do NOT run its Python scripts
    (supply-chain discipline; the documented rules stand alone).
