@@ -18,6 +18,8 @@ test("baseline security headers are present on responses", async ({ page }) => {
   expect(headers["x-frame-options"]).toBe("DENY");
   expect(headers["x-content-type-options"]).toBe("nosniff");
   expect(headers["referrer-policy"]).toBe("strict-origin-when-cross-origin");
+  expect(headers["strict-transport-security"]).toContain("max-age=31536000");
+  expect(headers["permissions-policy"]).toContain("camera=()");
 });
 
 test("anonymous request to a protected page is redirected to /login at the edge", async ({ request }) => {
@@ -92,20 +94,24 @@ test("orphaned top-level app routes (/chat, /mail) are not reachable unauthentic
 });
 
 // LAST ON PURPOSE — see ordering note at the top of this file.
-test("repeated failed sign-ins are rate limited with 429", async ({ request }) => {
+test("failed sign-ins are rate limited (429) at or before the configured 5-attempt ceiling", async ({ request }) => {
   const email = `sec-ratelimit-${Date.now()}@novaanalytics.io`; // nonexistent user
-  let sawTooManyRequests = false;
-  let lastStatus = 0;
-  // Custom rule is 10 per 60s on /sign-in/email; 14 attempts guarantees crossing it.
-  for (let i = 0; i < 14; i++) {
+  const statuses: number[] = [];
+  for (let i = 0; i < 9; i++) {
     const res = await request.post("/api/auth/sign-in/email", {
       data: { email, password: "definitely-wrong-1!" },
     });
-    lastStatus = res.status();
-    if (lastStatus === 429) {
-      sawTooManyRequests = true;
-      break;
-    }
+    statuses.push(res.status());
+    if (res.status() === 429) break;
   }
-  expect(sawTooManyRequests, `never saw 429; last status: ${lastStatus}`).toBe(true);
+  const firstBlocked = statuses.indexOf(429);
+  // A 429 MUST appear — rate limiting is active on the credential endpoint.
+  expect(firstBlocked, `no 429 seen in ${statuses.join(",")}`).toBeGreaterThanOrEqual(0);
+  // ...and no later than our configured max of 5. A block past 5 would mean the rule is
+  // looser or gone. Exact count is intentionally NOT pinned: Playwright shares ONE localhost
+  // IP, so an earlier spec's sign-in can pre-warm this same /sign-in/email bucket within the
+  // 60s window (lowering the count) — the ≤5 ceiling stays robust, and a fallback to the
+  // stricter built-in 3/10s is not a regression. Everything before the block is a plain 401.
+  expect(firstBlocked, `429 landed past the 5-attempt ceiling: ${statuses.join(",")}`).toBeLessThanOrEqual(5);
+  expect(statuses.slice(0, firstBlocked).every((s) => s === 401)).toBe(true);
 });

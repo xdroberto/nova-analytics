@@ -37,6 +37,17 @@ honest list of what is intentionally out of scope or imperfect, kept current as 
   tooling, no user-supplied CSS at runtime) and esbuild via drizzle-kit (dev-only migration tooling, not
   in the prod image). Fixes are breaking downgrades (Next / drizzle-kit); re-evaluated per upstream minor
   rather than force-fixed.
+- **Auth rate-limit IP behind the proxy** (adversarial-review finding). Rate limiting is enabled and the
+  e2e suite pins the 5/60s sign-in rule, but in production behind nginx the per-IP key needs
+  `advanced.ipAddress.trustedProxies` (nginx / docker-bridge CIDR) to recover the real client IP —
+  otherwise every `X-Forwarded-For`-bearing client collapses into one shared `no-trusted-ip` bucket
+  (coarser throttling; a narrow same-bucket DoS). NOT remotely exploitable: the container binds
+  `127.0.0.1:3000`, so a forged single-value XFF can't reach the app directly. Follow-up: set
+  `trustedProxies` and verify against the live nginx→container hop.
+- **No RBAC** (adversarial-review finding). `role: "admin"` is hardcoded for every authenticated user
+  (display-only; the `user` table has no role column), so there is a single access tier — every logged-in
+  user has full `/dashboard/*` access. Fine for a single-reviewer trial; a real product needs a DB-backed
+  role + server-side authorization before any role-gated feature.
 
 ## Process slips caught & fixed (repo hygiene)
 
