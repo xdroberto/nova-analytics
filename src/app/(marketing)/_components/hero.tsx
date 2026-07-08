@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { SpotlightCard } from "./interactive";
+
 /** Precomputed bar chart geometry (from the operator design). */
 const BARS: { x: number; y: number; h: number; cyan: boolean; delay: number }[] = [
   { x: 24, y: 152, h: 80, cyan: true, delay: 0.1 },
@@ -21,93 +23,106 @@ const DOTS: { cx: number; cy: number; delay: number }[] = [
 /** Live-dashboard preview card — glass panel, floats, chart draws in on load. */
 function HeroPreview() {
   return (
-    <div className="nv-reveal [perspective:1200px]" style={{ animationDelay: "0.25s" }}>
-      <div
-        className="nv-float relative rounded-[20px] border border-[color-mix(in_oklab,var(--chart-5)_16%,transparent)] p-6 shadow-[0_40px_90px_rgba(0,0,0,0.55),0_0_80px_color-mix(in_oklab,var(--primary)_12%,transparent)] backdrop-blur-md"
-        style={{
-          background:
-            "linear-gradient(180deg, color-mix(in oklab, var(--card) 92%, white 3%), color-mix(in oklab, var(--card) 96%, black 4%))",
-        }}
-      >
-        {/* window chrome + LIVE */}
-        <div className="mb-[18px] flex items-center gap-2">
-          <span className="size-2.5 rounded-full bg-[color-mix(in_oklab,var(--chart-5)_28%,transparent)]" />
-          <span className="size-2.5 rounded-full bg-[color-mix(in_oklab,var(--chart-5)_28%,transparent)]" />
-          <span className="size-2.5 rounded-full bg-[color-mix(in_oklab,var(--chart-5)_28%,transparent)]" />
-          <span className="ml-3 h-3 max-w-[180px] flex-1 rounded-md bg-[color-mix(in_oklab,var(--chart-5)_10%,transparent)]" />
-          <span className="flex items-center gap-1.5 font-mono text-[11px] text-[var(--chart-1)]">
-            <span className="nv-pulse size-1.5 rounded-full bg-[var(--chart-1)]" />
-            LIVE
-          </span>
-        </div>
-
-        {/* mini stats */}
-        <div className="mb-4 flex gap-5">
-          {[
-            { label: "Revenue", value: "$2.4M", delta: "↑ 18%" },
-            { label: "Active now", value: "14,208", delta: "↑ 6%" },
-          ].map((s) => (
-            <div
-              key={s.label}
-              className="flex-1 rounded-xl border border-[color-mix(in_oklab,var(--chart-5)_8%,transparent)] bg-[color-mix(in_oklab,var(--chart-5)_5%,transparent)] px-3.5 py-3"
-            >
-              <div className="mb-1 text-[11px] uppercase tracking-[0.06em] text-foreground-tertiary">{s.label}</div>
-              <div className="font-heading font-semibold text-[20px] text-white">
-                {s.value} <span className="font-medium text-[12px] text-[var(--chart-4)]">{s.delta}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* chart */}
-        <svg
-          viewBox="0 0 520 240"
-          className="block w-full"
-          role="img"
-          aria-label="Illustrative real-time analytics chart"
+    <div className="nv-reveal" style={{ animationDelay: "0.25s" }}>
+      <div className="nv-float">
+        <SpotlightCard
+          tilt
+          className="group relative overflow-hidden rounded-[20px] border border-[color-mix(in_oklab,var(--chart-5)_16%,transparent)] p-6 shadow-[0_40px_90px_rgba(0,0,0,0.55),0_0_80px_color-mix(in_oklab,var(--primary)_12%,transparent)] backdrop-blur-md transition-transform duration-200 ease-out [transform:perspective(1200px)_rotateX(var(--rx,0deg))_rotateY(var(--ry,0deg))] motion-reduce:[transform:none]"
+          style={{
+            background:
+              "linear-gradient(180deg, color-mix(in oklab, var(--card) 92%, white 3%), color-mix(in oklab, var(--card) 96%, black 4%))",
+          }}
         >
-          <g stroke="color-mix(in oklab, var(--chart-5) 10%, transparent)" strokeDasharray="4 6">
-            <line x1="0" y1="60" x2="520" y2="60" />
-            <line x1="0" y1="120" x2="520" y2="120" />
-            <line x1="0" y1="180" x2="520" y2="180" />
-          </g>
-          <g>
-            {BARS.map((b) => (
-              <rect
-                key={b.x}
-                x={b.x}
-                y={b.y}
-                width="34"
-                height={b.h}
-                rx="6"
-                fill={b.cyan ? "var(--chart-1)" : "var(--chart-2)"}
-                className="nv-bar"
-                style={{ animationDelay: `${b.delay}s` }}
-              />
-            ))}
-          </g>
-          <polyline
-            points="41,132 103,102 165,116 227,68 289,86 351,38 413,58 475,14"
-            fill="none"
-            stroke="var(--chart-5)"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="nv-draw"
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+            style={{
+              background:
+                "radial-gradient(320px circle at var(--mx, 50%) var(--my, 0%), color-mix(in oklab, var(--primary) 14%, transparent), transparent 60%)",
+            }}
           />
-          <g fill="var(--chart-5)" stroke="var(--background)" strokeWidth="2">
-            {DOTS.map((d) => (
-              <circle
-                key={`${d.cx}-${d.cy}`}
-                cx={d.cx}
-                cy={d.cy}
-                r="4.5"
-                className="nv-dot"
-                style={{ animationDelay: `${d.delay}s` }}
+          <div className="relative">
+            {/* window chrome + LIVE */}
+            <div className="mb-[18px] flex items-center gap-2">
+              <span className="size-2.5 rounded-full bg-[color-mix(in_oklab,var(--chart-5)_28%,transparent)]" />
+              <span className="size-2.5 rounded-full bg-[color-mix(in_oklab,var(--chart-5)_28%,transparent)]" />
+              <span className="size-2.5 rounded-full bg-[color-mix(in_oklab,var(--chart-5)_28%,transparent)]" />
+              <span className="ml-3 h-3 max-w-[180px] flex-1 rounded-md bg-[color-mix(in_oklab,var(--chart-5)_10%,transparent)]" />
+              <span className="flex items-center gap-1.5 font-mono text-[11px] text-[var(--chart-1)]">
+                <span className="nv-pulse size-1.5 rounded-full bg-[var(--chart-1)]" />
+                LIVE
+              </span>
+            </div>
+
+            {/* mini stats */}
+            <div className="mb-4 flex gap-5">
+              {[
+                { label: "Revenue", value: "$2.4M", delta: "↑ 18%" },
+                { label: "Active now", value: "14,208", delta: "↑ 6%" },
+              ].map((s) => (
+                <div
+                  key={s.label}
+                  className="flex-1 rounded-xl border border-[color-mix(in_oklab,var(--chart-5)_8%,transparent)] bg-[color-mix(in_oklab,var(--chart-5)_5%,transparent)] px-3.5 py-3"
+                >
+                  <div className="mb-1 text-[11px] uppercase tracking-[0.06em] text-foreground-tertiary">{s.label}</div>
+                  <div className="font-heading font-semibold text-[20px] text-white">
+                    {s.value} <span className="font-medium text-[12px] text-[var(--chart-4)]">{s.delta}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* chart */}
+            <svg
+              viewBox="0 0 520 240"
+              className="block w-full"
+              role="img"
+              aria-label="Illustrative real-time analytics chart"
+            >
+              <g stroke="color-mix(in oklab, var(--chart-5) 10%, transparent)" strokeDasharray="4 6">
+                <line x1="0" y1="60" x2="520" y2="60" />
+                <line x1="0" y1="120" x2="520" y2="120" />
+                <line x1="0" y1="180" x2="520" y2="180" />
+              </g>
+              <g>
+                {BARS.map((b) => (
+                  <rect
+                    key={b.x}
+                    x={b.x}
+                    y={b.y}
+                    width="34"
+                    height={b.h}
+                    rx="6"
+                    fill={b.cyan ? "var(--chart-1)" : "var(--chart-2)"}
+                    className="nv-bar"
+                    style={{ animationDelay: `${b.delay}s` }}
+                  />
+                ))}
+              </g>
+              <polyline
+                points="41,132 103,102 165,116 227,68 289,86 351,38 413,58 475,14"
+                fill="none"
+                stroke="var(--chart-5)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="nv-draw"
               />
-            ))}
-          </g>
-        </svg>
+              <g fill="var(--chart-5)" stroke="var(--background)" strokeWidth="2">
+                {DOTS.map((d) => (
+                  <circle
+                    key={`${d.cx}-${d.cy}`}
+                    cx={d.cx}
+                    cy={d.cy}
+                    r="4.5"
+                    className="nv-dot"
+                    style={{ animationDelay: `${d.delay}s` }}
+                  />
+                ))}
+              </g>
+            </svg>
+          </div>
+        </SpotlightCard>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { NovaLogo } from "@/components/nova-logo";
 import { Button } from "@/components/ui/button";
 
+import { SiteHeader } from "./_components/site-header";
 import { instrumentSans, jetBrainsMono, sora } from "./fonts";
 
 /**
@@ -65,7 +66,7 @@ export default function MarketingLayout({ children }: Readonly<{ children: React
           />
         </div>
 
-        <header className="sticky top-0 z-40 border-border/60 border-b bg-background/80 backdrop-blur-md">
+        <SiteHeader>
           <nav aria-label="Main" className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6">
             <Link prefetch={false} href="/" className="rounded-md focus-visible:outline-2 focus-visible:outline-ring">
               <NovaLogo size={24} />
@@ -83,7 +84,7 @@ export default function MarketingLayout({ children }: Readonly<{ children: React
               </Button>
             </div>
           </nav>
-        </header>
+        </SiteHeader>
 
         <main className="relative z-10 flex-1">{children}</main>
 
