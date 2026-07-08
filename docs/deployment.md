@@ -111,20 +111,22 @@ Verified read-only, recorded honestly (not assumed):
 | `PermitEmptyPasswords` | `no` | ✅ |
 | `KbdInteractiveAuthentication` | `no` | ✅ |
 | `MaxAuthTries` | `6` | ✅ |
-| **`PasswordAuthentication`** | **`yes`** | ⚠️ **open** — should be `no` (all access is key-based) |
-| **fail2ban** | **not installed** | ⚠️ no SSH brute-force auto-ban |
-| `X11Forwarding` | `yes` | ⓘ minor — unnecessary on a server |
+| **`PasswordAuthentication`** | **`no`** (applied 2026-07-08 via drop-in) | ✅ key-only |
+| **fail2ban** | **active** (1.0.2 · sshd jail · systemd backend) | ✅ auto-bans brute-force |
+| `X11Forwarding` | `no` (applied 2026-07-08) | ✅ |
 | `ufw` | active; default deny incoming; only `22/tcp` + `80,443/tcp` (Nginx Full) allowed | ✅ |
 | OS | Ubuntu 24.04.4 LTS | — |
 
-**Open findings (operator decision — not auto-applied; live-sshd changes risk lockout):**
-1. `PasswordAuthentication no` — key access is proven (CD deploys succeed via key), so this closes the
-   password brute-force surface with no expected lockout. Apply in `/etc/ssh/sshd_config.d/` + `sshd -t` +
-   reload (keep the current session open to verify before disconnecting).
-2. Install fail2ban (`sshd` jail) for defense-in-depth on port 22.
-3. Optional: `X11Forwarding no`.
+**Findings — APPLIED 2026-07-08** (anti-lockout protocol: `sshd -t` validate → `reload` (not restart) →
+fresh key-connection verified before trusting the change):
+1. ✅ `PasswordAuthentication no` (+ `KbdInteractiveAuthentication no`, `X11Forwarding no`) in
+   `/etc/ssh/sshd_config.d/99-nova-hardening.conf`. `PubkeyAuthentication yes` intact; a new key-based
+   login succeeded post-reload → no lockout.
+2. ✅ fail2ban 1.0.2 installed + enabled; `[sshd]` jail (systemd backend, bantime 1h, maxretry 5,
+   `ignoreip` localhost). Validated the finding on install — the port was under active brute-force:
+   fail2ban banned 6 IPs (57 failed attempts) on the first scan.
 
-App-layer brute-force is separately mitigated by Better Auth rate limiting (`/sign-in/email` 10/60s).
+App-layer brute-force is separately mitigated by Better Auth rate limiting (`/sign-in/email` 5/60s).
 
 ## Load sanity (autocannon vs LIVE, 2026-07-08)
 

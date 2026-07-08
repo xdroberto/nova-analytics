@@ -139,18 +139,14 @@ One CPX11 hosts Nova alongside co-tenants; isolation is by container memory limi
 
 ```mermaid
 flowchart TB
-    subgraph vps["Hetzner CPX11 · Ubuntu 24.04 · ~2GB RAM + 3G swap · ufw 22/80/443"]
-        NGINX["nginx — TLS for all vhosts"]
-        subgraph nova["Nova (mem-limited)"]
-            W["nova-web-1 · 512M"]
-            P[("shared-postgres · 384M")]
-        end
-        subgraph co["Co-tenants"]
-            PORT["portfolio (static)"]
-            SE["sideeffects (static)"]
-            MOON["moonhouse (Python)"]
-            IM["imcore (docker)"]
-        end
+    subgraph vps["Hetzner CPX11 · Ubuntu 24.04 · 2GB RAM + 3G swap · ufw 22/80/443 · fail2ban"]
+        NGINX["nginx — TLS, all vhosts"]
+        W["nova-web-1 · 512M · Nova"]
+        P[("shared-postgres · 384M · Nova")]
+        PORT["portfolio · static"]
+        SE["sideeffects · static"]
+        MOON["moonhouse · Python"]
+        IM["imcore · docker"]
     end
     NGINX --> W
     NGINX --> PORT
@@ -158,6 +154,9 @@ flowchart TB
     NGINX --> MOON
     W --> P
 ```
+
+> Nova is memory-limited (`web 512M` + `postgres 384M`) for blast-radius isolation on the shared host;
+> `imcore` runs independently (not fronted by nginx).
 
 ## 6. Branching & promotion model
 

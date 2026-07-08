@@ -50,12 +50,13 @@ Two sessions run concurrently with **no file collision**:
   UI merge. If either track needs a shared file, coordinate here first.
 
 ## ⚠ Pending Roberto actions (not code — external/his account)
-0. **VPS SSH hardening (B.3 findings, verified `sshd -T` 2026-07-08 — see docs/deployment.md).** Mostly
-   solid (root is key-only `without-password`; ufw active deny-by-default 22/80/443; empty-pw off), BUT
-   two open findings: **`PasswordAuthentication yes`** (should be `no` — key access proven via CD, no
-   expected lockout) and **fail2ban NOT installed**. Not auto-applied — live-sshd edits risk lockout, and
-   it's Roberto's box. Recommend: set `PasswordAuthentication no` (with `sshd -t` + reload + keep session
-   open) + install fail2ban. App-layer brute-force already covered by the new Better Auth rate limit.
+0. ✅ **VPS SSH hardening — APPLIED (2026-07-08, with Roberto's lifeline session + anti-lockout protocol).**
+   `PasswordAuthentication no` + `KbdInteractiveAuthentication no` + `X11Forwarding no` (drop-in
+   `99-nova-hardening.conf`; `sshd -t` validated → `reload`; a fresh key login verified → no lockout;
+   `PubkeyAuthentication yes` intact). fail2ban 1.0.2 active (`[sshd]` jail, systemd backend) — validated
+   the finding on install: the port was under active brute-force, **6 IPs banned / 57 failed attempts on
+   the first scan.** Details in docs/deployment.md. Root stays key-only; ufw 22/80/443. No Roberto action
+   left here.
 1. ✅ **UptimeRobot — LIVE (2026-07-08).** HTTP(s) monitor on `/api/health`, 5-min interval, email alerts,
    SSL-expiry watch included (Roberto's account; screenshot captured). Was the last Phase-4 item →
    **Phase 4 now FULLY CLOSED.**
