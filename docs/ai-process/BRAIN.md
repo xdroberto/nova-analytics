@@ -4,11 +4,12 @@
 > every significant action, (4) never reconstruct state from chat memory.
 
 ## Current position
-- Phase: 4 (Deploy) ✅ CLOSED (af6625c). **LIVE at https://nova.robertobh.dev** — TLS, health ok,
-  auth works, security headers live, push-to-deploy demoed end-to-end with rollback-safe CD.
-- Next: Phase 5 (Hardening) + Roberto's requested polish of repo/landing/README (see below).
-- Session note: this closes the working session; a fresh session boots from ROADMAP→BRAIN→
-  latest SESSION-LOG and continues from here with zero chat context.
+- Phase: 4 (Deploy) ✅ **FULLY CLOSED** (promoted to main via PR #6 = merge 4325946; UptimeRobot monitor
+  now live). **LIVE at https://nova.robertobh.dev** — TLS, health ok, auth works, security headers live,
+  push-to-deploy verified end-to-end from a PR merge (~3m09s: build-push 2m46s + deploy 16s).
+- Next: **Phase 5 (Hardening)** — Vitest units, cross-browser/mobile QA matrix, adversarial review; plus
+  the queued repo-hygiene batch (see backlog) + repo/landing/README polish.
+- Session note: a fresh session boots from ROADMAP→BRAIN→latest SESSION-LOG with zero chat context.
 
 ## ✅ Commitlint gate — first live run RESOLVED (PR #6)
 - The `commits` gate ran live for the first time on **PR #6 and PASSED (30s).** base..head SHA
@@ -20,15 +21,14 @@
   See Decisions log + the Phase-5 hygiene backlog (node/npm pin, to prevent recurrence).
 
 ## ⚠ Pending Roberto actions (not code — external/his account)
-1. **UptimeRobot**: create a monitor on https://nova.robertobh.dev/api/health (5-min, keyword
-   "ok" or status 200, email alert). Needs his account — I can't create one. Last Phase-4 item.
-2. **Disk on the VPS**: 38G disk, 87% used (4.7G free). **VERIFIED breakdown (2026-07-08):** culprit is
-   the **Docker build cache — 22.1GB total, 21.34GB private/reclaimable, 0 active** (188 entries), from
-   IMCORE's on-host builds ~2mo ago. **Dangling images: NONE (0B).** All 5 images active (nova 334MB CI ·
-   postgres:17 424MB · imcore-api 608MB · imcore-frontend 354MB · pgvector 612MB). Nova adds ~0 (CI/GHCR).
-   **Nothing live depends on the cache** — running svcs (nova-web-1, shared-postgres) use tagged images,
-   untouched by a prune. `docker builder prune -f` frees ~21–22GB → disk 87%→~35%; only cost is a slower
-   NEXT imcore build (no data/service loss). **Roberto's call — imcore's cache. Report-only this session.**
+1. ✅ **UptimeRobot — LIVE (2026-07-08).** HTTP(s) monitor on `/api/health`, 5-min interval, email alerts,
+   SSL-expiry watch included (Roberto's account; screenshot captured). Was the last Phase-4 item →
+   **Phase 4 now FULLY CLOSED.**
+2. ✅ **Disk on the VPS — pruned (2026-07-08).** `docker builder prune -f` ran (build-cache only, approved):
+   **87%→74%, ~4GB actually reclaimed on disk** (free 4.7G→9.4G), all services stayed up. ⚠ HONEST
+   CORRECTION: far less than docker's advertised "21.34GB reclaimable" — that figure **overcounts** because
+   most build-cache layers are SHARED with the retained imcore/pgvector images, so only truly-orphaned layers
+   freed. Further real reclaim would need deleting imcore's IMAGES (~1.6GB) — Roberto's call, not build cache.
 3. Reviewer creds admin@novaanalytics.io / NovaReview2026! are live + public (in repo, by design
    for review). Rotate at Task 29 (SUBMISSION) if desired.
 
@@ -188,8 +188,12 @@ decision (ADR-004), auditor pre-deploy gate.
 - ⚠ Local-only: Next infers workspace root from a stray `C:\Users\xdrob\package-lock.json` → set `turbopack.root`
   + `outputFileTracingRoot` in `next.config.mjs` at Task 20 (does NOT affect CI's clean checkout).
 - `npm audit`: 2 moderate vulnerabilities → review in Phase 4 audit gate.
-- **gh + fork gotcha:** `gh` defaults to the UPSTREAM (arhamkhnz) for `run list`/PR ops. Always pass
-  `--repo xdroberto/nova-analytics` (or `--base develop` on PRs) to target the fork.
+- **gh + fork gotcha (LESSON — bit the war-room TWICE):** `gh` defaults to the UPSTREAM (arhamkhnz) as base
+  repo for `pr`/`run` ops, so bare `gh pr list` / `gh pr view N` read UPSTREAM — that is exactly what made the
+  war-room believe #59/#61 were "our stray open PRs" (they are arhamkhnz's; our fork has 0 open PRs). **Resolved:**
+  `gh repo set-default xdroberto/nova-analytics` is now set in this clone. Even so, do NOT trust bare `gh pr`
+  output blindly — pass `--repo xdroberto/nova-analytics` for anything load-bearing (the default can be lost on
+  a fresh clone).
 
 ## Decisions log (newest first)
 - 2026-07-08: **develop→main promotion PR #6 opened + CI drill caught a real bug.** Promotes the

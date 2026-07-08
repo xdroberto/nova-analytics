@@ -18,7 +18,7 @@
 | 1 | Auth (spike → stabilize) | ✅ | e2e: signup→login→dashboard→logout | dac7bd1 |
 | 2 | Whitelabel | ✅ | Branding grep = 0 hits, CI-enforced | 1e6a511 |
 | 3 | Landing | ✅ | Lighthouse ≥90 mobile; CTA→signup works | 6cd239e |
-| 4 | Deploy | ✅ | Public HTTPS + push-to-deploy + audit gate (monitoring = Roberto's UptimeRobot) | af6625c |
+| 4 | Deploy | ✅ | Public HTTPS + push-to-deploy + audit gate + uptime monitoring (UptimeRobot **LIVE**) | af6625c |
 | 5 | Hardening | ⬜ | Full suite green in CI; review findings fixed | — |
 | 6 | Delivery | ⬜ | PRD checklist 100% + final audit gate | — |
 
@@ -34,3 +34,5 @@
 | 2026-07-08 | Infra pivot: reuse existing CPX11 with container isolation (ADR-003 amended) | b2977a7 |
 | 2026-07-08 | FIRST LIVE DEPLOY — https://nova.robertobh.dev up (TLS, health ok, Secure cookie, signup/login) | 67f9382 |
 | 2026-07-08 | Phase 4 closed: push-to-deploy demoed end-to-end (rollback-safe CD), security headers live, audit gate passed | af6625c |
+| 2026-07-08 | Phase 4 promoted to production (PR #6 develop→main); push-to-deploy verified from merge (~3m09s), health ok | 4325946 |
+| 2026-07-08 | UptimeRobot monitor LIVE (/api/health · 5-min · email + SSL-expiry) — **Phase 4 FULLY CLOSED** | 4325946 |

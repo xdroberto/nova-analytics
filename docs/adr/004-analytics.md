@@ -15,6 +15,14 @@ that must stay up during hiring.
 covered by uptime monitoring (UptimeRobot on `/api/health`, 5-min interval). Product
 page-view analytics is deferred, with a documented self-hosted-friendly path for later.
 
+## Monitoring status — LIVE (2026-07-08)
+
+The UptimeRobot monitor is live and confirmed (Roberto's account; evidence screenshot captured on his
+side): an HTTP(s) monitor on `https://nova.robertobh.dev/api/health`, 5-minute interval, email alerts,
+with SSL-certificate-expiry watch included. This satisfies the operational-visibility decision above and
+closes the last Phase-4 item. Nova's health route returns `{"status":"ok","db":"up"}` (200) when the pool
+is healthy and 503 (degraded) when the DB is down — see `docs/deployment.md`.
+
 ## Rationale
 
 - **Plausible self-hosted** needs ClickHouse — ~1 GB+ RAM on its own. Incompatible with the
