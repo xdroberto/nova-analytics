@@ -125,3 +125,20 @@ Verified read-only, recorded honestly (not assumed):
 3. Optional: `X11Forwarding no`.
 
 App-layer brute-force is separately mitigated by Better Auth rate limiting (`/sign-in/email` 10/60s).
+
+## Load sanity (autocannon vs LIVE, 2026-07-08)
+
+Staged load against production — targets `/` and `/api/health` ONLY (never `/api/auth/*`: the rate
+limiter would pollute results with 429s). Web container `mem_limit` is 512M; `docker stats nova-web-1`
+sampled every 2s throughout.
+
+| Stage | Target | p99 | avg | req/s | total | errors | mem peak |
+|---|---|---|---|---|---|---|---|
+| `-c10 -d10` | `/` | 61 ms | 50 ms | ~199 | 2k / 10s | 0 | — |
+| `-c10 -d10` | `/api/health` | 68 ms | 47 ms | ~209 | 2k / 10s | 0 | ~85 MiB |
+| `-c20 -d15` | `/` | 71 ms | 49 ms | ~402 | 6k / 15s | 0 | — |
+| `-c20 -d15` | `/api/health` | 69 ms | 47 ms | ~422 | 6k / 15s | 0 | ~89 MiB |
+
+**Verdict: healthy.** Zero non-2xx / timeouts across ~16k requests; p99 stayed < 75 ms. Memory peaked
+**~89 MiB / 512 MiB (~17%)** — no OOM, no restart, recovers to ~68 MiB idle. CPU bursts to ~93% of one
+vCPU under 2× connections. Comfortable headroom on the shared host at this load.
