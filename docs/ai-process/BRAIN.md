@@ -10,19 +10,25 @@
 - Session note: this closes the working session; a fresh session boots from ROADMAP→BRAIN→
   latest SESSION-LOG and continues from here with zero chat context.
 
-## ⚠ Watch on next PR
-- The commitlint `commits` CI job is `pull_request`-scoped, so it has NOT run in CI yet
-  (pushes to develop skip it). Config + rules are verified locally; its **first live CI run
-  is the next PR** — confirm it scopes to base..head correctly and doesn't choke on the
-  merge-ref. If it misfires, the fix is the `--from/--to` SHA expressions in `.github/workflows/ci.yml`.
+## ✅ Commitlint gate — first live run RESOLVED (PR #6)
+- The `commits` gate ran live for the first time on **PR #6 and PASSED (30s).** base..head SHA
+  scoping (`171fc1e..4bc3d81`) is correct — the earlier "watch the merge-ref / SHA expressions"
+  concern was a **red herring**. The real bug the drill exposed: `npm ci` had been failing in ALL
+  CI jobs on `develop` since `ad8e66e` — that commit regenerated `package-lock.json` with **npm 11**
+  (local Node 24) but CI/Docker/prod pin **Node 22 → npm 10**, which rejected the lock ("Missing
+  conventional-commits-parser@6.4.0"). Fixed by regenerating with npm 10 (`fix(deps)` 4bc3d81).
+  See Decisions log + the Phase-5 hygiene backlog (node/npm pin, to prevent recurrence).
 
 ## ⚠ Pending Roberto actions (not code — external/his account)
 1. **UptimeRobot**: create a monitor on https://nova.robertobh.dev/api/health (5-min, keyword
    "ok" or status 200, email alert). Needs his account — I can't create one. Last Phase-4 item.
-2. **Disk on the VPS**: 87% used (4.7G free). NOT Nova (its image is 334MB, CI-built). Culprit is
-   **22GB of Docker build cache (21GB reclaimable)** from IMCORE images built ON the host
-   (imcore-frontend/api, pgvector present). `docker builder prune -f` reclaims ~21GB safely
-   (doesn't touch running containers or tagged images). Roberto's call — it's imcore's cache.
+2. **Disk on the VPS**: 38G disk, 87% used (4.7G free). **VERIFIED breakdown (2026-07-08):** culprit is
+   the **Docker build cache — 22.1GB total, 21.34GB private/reclaimable, 0 active** (188 entries), from
+   IMCORE's on-host builds ~2mo ago. **Dangling images: NONE (0B).** All 5 images active (nova 334MB CI ·
+   postgres:17 424MB · imcore-api 608MB · imcore-frontend 354MB · pgvector 612MB). Nova adds ~0 (CI/GHCR).
+   **Nothing live depends on the cache** — running svcs (nova-web-1, shared-postgres) use tagged images,
+   untouched by a prune. `docker builder prune -f` frees ~21–22GB → disk 87%→~35%; only cost is a slower
+   NEXT imcore build (no data/service loss). **Roberto's call — imcore's cache. Report-only this session.**
 3. Reviewer creds admin@novaanalytics.io / NovaReview2026! are live + public (in repo, by design
    for review). Rotate at Task 29 (SUBMISSION) if desired.
 
@@ -37,6 +43,24 @@ key points** — treat as polish folded into Phase 5/6:
 - Repo hygiene: consider a `.gitattributes` (`* text=auto eol=lf`) to kill the CRLF warnings;
   the `*.sh` gitignore trap already bit once (deploy script) — now fixed with `!deploy/*.sh`.
 model/effort for Phase 5: propose at phase open (model-strategist).
+
+## Repo hygiene backlog (Phase 5 batch — staged on branch `chore/repo-hygiene`, NOT in PR #6)
+- **Node/npm pin (root cause of the PR#6 lock break):** add `.nvmrc` (22) + `"engines": {"node":"22.x"}`
+  in package.json; consider `engine-strict=true` in `.npmrc` so npm 11 (Node 24) can't silently
+  re-desync the lockfile against CI/Docker/prod (Node 22 → npm 10). Highest-value item — prevents recurrence.
+- **Supply-chain hardening** (motivated by the 2025 npm registry attacks — chalk/debug crypto-clipper,
+  Shai-Hulud worm): evaluate `ignore-scripts=true` in `.npmrc`. VERIFY FIRST that nothing in our stack
+  needs a legit postinstall (test install + build + e2e green) before enabling — do NOT assume. Document
+  the verdict either way here; if adopted, add one line to README's stack section.
+- **Package-manager note (for ADR/limitations):** pnpm considered as a stricter client; deferred
+  mid-trial (migration cost vs live review window). Registry supply-chain risk is client-agnostic anyway.
+- **npm-audit verdict (DONE 2026-07-08): 6 moderate, 0 runtime-exploitable for Nova.** (a) esbuild ≤0.24.2
+  → @esbuild-kit/* → drizzle-kit = DEV-only (migration tooling, absent from the prod image; advisory is
+  dev-server-only). (b) postcss <8.5.10 → next = in the prod tree but not runtime-exploitable (build-time
+  CSS tooling; the XSS needs untrusted CSS input, no such path in Nova). No trivial fix — `audit fix --force`
+  = breaking downgrades (next→9.3.3, drizzle-kit→0.18.1), rejected; both await upstream transitive bumps.
+  ACCEPT + monitor; optional Phase-5: npm `overrides` to force patched postcss/esbuild IF build+e2e stay green.
+- Also still queued: `.gitattributes` (`* text=auto eol=lf`, CRLF); README submission polish (Task 27).
 
 ## How the live deploy works (topology recap for a cold session)
 - Host: existing Hetzner CPX11 178.156.248.110 (Ubuntu 24.04.4), SHARED with portfolio +
@@ -168,6 +192,25 @@ decision (ADR-004), auditor pre-deploy gate.
   `--repo xdroberto/nova-analytics` (or `--base develop` on PRs) to target the fork.
 
 ## Decisions log (newest first)
+- 2026-07-08: **develop→main promotion PR #6 opened + CI drill caught a real bug.** Promotes the
+  3 infra/docs commits (repo-steward + commitlint gate + Phase-4 close) to main. The gate's first
+  live run exposed that `npm ci` had been red in ALL CI jobs on develop since `ad8e66e`: that commit
+  built package-lock.json with **npm 11** (local Node 24), but CI/Docker/prod pin **Node 22 → npm 10**,
+  which resolves @commitlint ^21.2.0's tree differently and rejects the lock ("Missing
+  conventional-commits-parser@6.4.0"). Reproduced locally with `npx npm@10 ci`. Fixed by regenerating
+  the lock with npm 10 (`fix(deps)` 4bc3d81) → accepted by both npm majors, confined to commitlint's
+  transitive tree, zero app deps. **Full PR-run then went GREEN: commits + quality + e2e all success.**
+  PR #6 is now 4 commits; promotion decision is Roberto's (do NOT auto-merge). Drill working as intended.
+- 2026-07-08: **repo-steward hygiene #1 DONE — 34 inherited fork branches pruned from origin.**
+  Deleted the origin∩upstream set (feat/* ×18, chore/* ×4, archive/* ×3, codex/* ×2, fix/* ×2,
+  migration/next15-tailwindv4, 3.0.0, eslint-compatibility-fixes, feature/prefs-and-style-fixes,
+  update-mail-sidebar) via safety-guarded `git push origin --delete` (aborts unless set==34 and no
+  protected ref). All 34 identical to upstream tips → recoverable (upstream public + full-SHA restore
+  log in scratchpad). `fetch --prune` also cleared 5 STALE `origin/feature/*` tracking refs — those
+  branches were already deleted on origin post-merge; all 5 tips confirmed MERGED→develop, local
+  branches kept, zero work lost. **origin now = develop + main only.** (BRAIN's earlier "~36" was an
+  estimate; true inherited-on-origin count = 34.) Reviewer-verified authorship on the two look-alike
+  branches (feature/prefs-and-style-fixes, feat/infra) = upstream's Arham Khan, not Roberto.
 - 2026-07-08: **repo-steward role added (Phase 4, adaptive process).** Two repo-hygiene slips
   (36 unpruned inherited branches; `deploy/remote-deploy.sh` swallowed by the `*.sh` gitignore,
   fixed 171fc1e) → new role owns the repo as a graded deliverable with MECHANICAL enforcement:
