@@ -217,6 +217,21 @@ decision (ADR-004), auditor pre-deploy gate.
   a fresh clone).
 
 ## Decisions log (newest first)
+- 2026-07-08: **Phase 5 B.4 — adversarial capstone review + load sanity; findings dispositioned.**
+  Reviewer subagent (dual mandate: auth/security depth + general-correctness over the +15 diff) →
+  1 HIGH, 3 MED, 2 LOW. **FIXED #1 HIGH:** orphaned top-level `/chat` + `/mail` served the app shell to
+  anonymous visitors — the proxy matcher is an allow-list (`/dashboard/*` only) and those `(main)/chat|mail`
+  layouts had no `getSession`; the REAL guarded chat/mail live at `/dashboard/*` (where the sidebar points),
+  so the top-level ones were unlinked template duplicates → deleted (20 files), regression-pinned, allow-list
+  guard boundary documented in proxy.ts. **FIXED #3/#4/#6:** sign-in rate limit 10→5/60s + honest comment
+  (dropped the false "stricter than built-in 3/10s" claim); 429 test made robust (≤5 ceiling — exact count
+  can't be pinned on a shared localhost IP where an earlier spec pre-warms the bucket); headers test asserts
+  all 5. **DOCUMENTED (limitations.md):** #2 rate-limit needs `trustedProxies` behind nginx (NOT remotely
+  exploitable — container binds 127.0.0.1), #5 no RBAC (`role` hardcoded, display-only). Reviewer confirmed
+  SOUND: forged-cookie reaches the authoritative getSession; expired-session hits the right schema + reuses
+  the cookie; 429 ordering can't poison logins; `customRules` path form correct; health refactor preserves
+  behavior. **Load (autocannon LIVE):** p99 < 75ms, 0 errors / ~16k req, mem peak ~89/512 MiB, no OOM.
+  **Verdict: promotable** → Phase-5 develop→main PR next.
 - 2026-07-08: **Security bypass suite GREEN 🎥 + explicit rate limiting enabled (Phase 5, tasks 2–3).**
   Vitest landed (evaluateHealth extracted+tested; 6 proxy characterization tests pin the optimistic
   edge). e2e security suite (ordered: per-IP rate-limit hammering LAST so it can't poison logins):
