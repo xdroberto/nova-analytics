@@ -80,6 +80,17 @@ test("an expired session is denied by the authoritative DB check", async ({ requ
   expect(after.url()).toContain("/login");
 });
 
+test("orphaned top-level app routes (/chat, /mail) are not reachable unauthenticated", async ({ request }) => {
+  // The real chat/mail live under the guarded /dashboard/*. These top-level
+  // (main)/chat and (main)/mail duplicates had NO auth check (proxy matcher is
+  // /dashboard/* only) and served the app shell to anonymous visitors. They are
+  // deleted; assert they no longer serve a page.
+  for (const path of ["/chat", "/mail"]) {
+    const res = await request.get(path, { maxRedirects: 0 });
+    expect(res.status(), `${path} must not serve 200 to an anonymous visitor`).not.toBe(200);
+  }
+});
+
 // LAST ON PURPOSE — see ordering note at the top of this file.
 test("repeated failed sign-ins are rate limited with 429", async ({ request }) => {
   const email = `sec-ratelimit-${Date.now()}@novaanalytics.io`; // nonexistent user

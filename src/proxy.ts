@@ -23,5 +23,10 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
+  // ALLOW-LIST: only these paths run the edge check, so every protected route MUST
+  // live under /dashboard/* (guarded here + by the dashboard layout's authoritative
+  // getSession). A protected route added OUTSIDE /dashboard/* without listing it here
+  // is silently PUBLIC — this bit us once (orphaned /chat + /mail served the app shell
+  // to anonymous visitors until deleted; regression-pinned in e2e/security.spec.ts).
   matcher: ["/dashboard/:path*", "/login", "/signup"],
 };
