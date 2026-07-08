@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const chartConfig = {
   visitors: {
     color: "var(--chart-1)",
-    label: "Visitors",
+    label: "Sessions",
   },
 } satisfies ChartConfig;
 
@@ -21,15 +21,15 @@ type TrafficSourceDatum = {
 };
 
 const sourcesData: TrafficSourceDatum[] = [
-  { label: "89.4k", source: "Organic Search", visitors: 89_400 },
-  { label: "55.2k", source: "Direct", visitors: 55_200 },
-  { label: "38.1k", source: "Social", visitors: 38_100 },
-  { label: "30.4k", source: "Referral", visitors: 30_400 },
-  { label: "22.7k", source: "Paid", visitors: 22_700 },
+  { label: "198.4k", source: "Organic Search", visitors: 198_400 },
+  { label: "121.6k", source: "Direct", visitors: 121_600 },
+  { label: "82.3k", source: "Social", visitors: 82_300 },
+  { label: "64.9k", source: "Referral", visitors: 64_900 },
+  { label: "45.7k", source: "Paid", visitors: 45_700 },
 ];
 
 const campaignsData: TrafficSourceDatum[] = [
-  { label: "16.8k", source: "Spring Launch", visitors: 16_800 },
+  { label: "15.8k", source: "Spring Launch", visitors: 15_800 },
   { label: "12.0k", source: "Newsletter", visitors: 12_000 },
   { label: "7.7k", source: "Retargeting", visitors: 7700 },
   { label: "5.9k", source: "Brand Search", visitors: 5900 },

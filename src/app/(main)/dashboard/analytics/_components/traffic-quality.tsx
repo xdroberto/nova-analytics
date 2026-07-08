@@ -96,11 +96,11 @@ const qualitySeries = [
 const chartConfig = {
   actualQuality: {
     color: "var(--chart-3)",
-    label: "Actual quality",
+    label: "Actual",
   },
   baselineQuality: {
     color: "var(--muted-foreground)",
-    label: "Baseline quality",
+    label: "Baseline",
   },
 } satisfies ChartConfig;
 
@@ -121,7 +121,7 @@ export function TrafficQuality() {
   return (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle className="font-normal">Traffic Quality</CardTitle>
+        <CardTitle className="font-normal">Engagement Quality</CardTitle>
         <CardAction>
           <Ellipsis className="size-4" />
         </CardAction>
@@ -152,7 +152,7 @@ export function TrafficQuality() {
             />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent className="w-40" labelFormatter={() => "Traffic quality"} />}
+              content={<ChartTooltipContent className="w-40" labelFormatter={() => "Engagement quality"} />}
             />
             <Line
               dataKey="baselineQuality"
