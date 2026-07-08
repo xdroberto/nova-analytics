@@ -7,55 +7,53 @@ export function OverviewKpis() {
       <div className="grid grid-cols-1 xl:grid-cols-8">
         <Card className="gap-5 overflow-hidden rounded-none border-0 border-foreground/10 border-b ring-0 xl:col-span-4 xl:border-r">
           <CardHeader>
-            <CardTitle className="font-normal">Net worth</CardTitle>
+            <CardTitle className="font-normal">Events this cycle</CardTitle>
           </CardHeader>
           <CardContent className="flex items-end justify-between">
             <div className="space-y-1">
-              <div className="text-3xl leading-none tracking-tight">$128.4K</div>
-              <p className="text-muted-foreground text-xs">+$9.8K vs last month</p>
+              <div className="text-3xl leading-none tracking-tight">8.64M</div>
+              <p className="text-muted-foreground text-xs">+13.6% vs last cycle</p>
             </div>
-            <Badge className="bg-green-500/10 text-green-700 dark:bg-green-500/15 dark:text-green-300">+8.4%</Badge>
+            <Badge className="bg-green-500/10 text-green-700 dark:bg-green-500/15 dark:text-green-300">+13.6%</Badge>
           </CardContent>
         </Card>
 
         <Card className="gap-5 overflow-hidden rounded-none border-0 border-foreground/10 border-b ring-0 xl:col-span-4">
           <CardHeader>
-            <CardTitle className="font-normal">Available cash</CardTitle>
+            <CardTitle className="font-normal">Events remaining</CardTitle>
           </CardHeader>
           <CardContent className="flex items-end justify-between">
             <div className="flex flex-col gap-1">
-              <div className="text-3xl leading-none tracking-tight">$12.8K</div>
-              <p className="text-muted-foreground text-xs">$410 above your 30-day average</p>
+              <div className="text-3xl leading-none tracking-tight">11.36M</div>
+              <p className="text-muted-foreground text-xs">of 20M monthly quota</p>
             </div>
-            <Badge className="bg-green-500/10 text-green-700 dark:bg-green-500/15 dark:text-green-300">+3.2%</Badge>
+            <Badge className="bg-green-500/10 text-green-700 dark:bg-green-500/15 dark:text-green-300">56.8%</Badge>
           </CardContent>
         </Card>
 
         <Card className="gap-5 overflow-hidden rounded-none border-0 border-foreground/10 ring-0 xl:col-span-4 xl:border-r">
           <CardHeader>
-            <CardTitle className="font-normal">Monthly spend</CardTitle>
+            <CardTitle className="font-normal">Avg events/day</CardTitle>
           </CardHeader>
           <CardContent className="flex items-end justify-between">
             <div className="flex flex-col gap-1">
-              <div className="text-3xl leading-none tracking-tight">$2,140</div>
-              <p className="text-muted-foreground text-xs">$124 more than last month</p>
+              <div className="text-3xl leading-none tracking-tight">288K</div>
+              <p className="text-muted-foreground text-xs">8.64M over 30 days</p>
             </div>
-            <Badge variant="destructive" className="bg-destructive/10 text-destructive">
-              +6.1%
-            </Badge>
+            <Badge className="bg-green-500/10 text-green-700 dark:bg-green-500/15 dark:text-green-300">+13.6%</Badge>
           </CardContent>
         </Card>
 
         <Card className="gap-5 overflow-hidden rounded-none border-0 ring-0 xl:col-span-4">
           <CardHeader>
-            <CardTitle className="font-normal">Savings rate</CardTitle>
+            <CardTitle className="font-normal">Quota used</CardTitle>
           </CardHeader>
           <CardContent className="flex items-end justify-between">
             <div className="flex flex-col gap-1">
-              <div className="text-3xl leading-none tracking-tight">28%</div>
-              <p className="text-muted-foreground text-xs">Up from 25.6% last month</p>
+              <div className="text-3xl leading-none tracking-tight">43.2%</div>
+              <p className="text-muted-foreground text-xs">8.64M of 20M events</p>
             </div>
-            <Badge className="bg-green-500/10 text-green-700 dark:bg-green-500/15 dark:text-green-300">+2.4%</Badge>
+            <Badge className="bg-green-500/10 text-green-700 dark:bg-green-500/15 dark:text-green-300">+4.9pp</Badge>
           </CardContent>
         </Card>
       </div>
