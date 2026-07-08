@@ -33,6 +33,12 @@ base**. Its front-matter auto-triggers broadly and WILL offer its 161 palettes /
 4. **Gated to Phase 5.5** — do not let it drive Phase 5 hardening.
 
 ## ⚠ Pending Roberto actions (not code — external/his account)
+0. **VPS SSH hardening (B.3 findings, verified `sshd -T` 2026-07-08 — see docs/deployment.md).** Mostly
+   solid (root is key-only `without-password`; ufw active deny-by-default 22/80/443; empty-pw off), BUT
+   two open findings: **`PasswordAuthentication yes`** (should be `no` — key access proven via CD, no
+   expected lockout) and **fail2ban NOT installed**. Not auto-applied — live-sshd edits risk lockout, and
+   it's Roberto's box. Recommend: set `PasswordAuthentication no` (with `sshd -t` + reload + keep session
+   open) + install fail2ban. App-layer brute-force already covered by the new Better Auth rate limit.
 1. ✅ **UptimeRobot — LIVE (2026-07-08).** HTTP(s) monitor on `/api/health`, 5-min interval, email alerts,
    SSL-expiry watch included (Roberto's account; screenshot captured). Was the last Phase-4 item →
    **Phase 4 now FULLY CLOSED.**

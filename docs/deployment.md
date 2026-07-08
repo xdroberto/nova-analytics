@@ -99,3 +99,29 @@ The reviewer user is seeded through the live API (same code path as the seed scr
 6. GHCR package visibility resolved (see "GHCR image access"); image pulled;
    `docker compose up -d`; `/api/health` returns `{"status":"ok"}`.
 7. Schema pushed via tunnel; reviewer user seeded via the live signup API.
+
+## VPS security posture (verified 2026-07-08, `sshd -T` effective values)
+
+Verified read-only, recorded honestly (not assumed):
+
+| Control | Actual value | Status |
+|---|---|---|
+| `PermitRootLogin` | `without-password` (key-only; passwords rejected for root) | ✅ |
+| `PubkeyAuthentication` | `yes` (CD ed25519 key + operator key; 2 keys in `/root/.ssh/authorized_keys`) | ✅ |
+| `PermitEmptyPasswords` | `no` | ✅ |
+| `KbdInteractiveAuthentication` | `no` | ✅ |
+| `MaxAuthTries` | `6` | ✅ |
+| **`PasswordAuthentication`** | **`yes`** | ⚠️ **open** — should be `no` (all access is key-based) |
+| **fail2ban** | **not installed** | ⚠️ no SSH brute-force auto-ban |
+| `X11Forwarding` | `yes` | ⓘ minor — unnecessary on a server |
+| `ufw` | active; default deny incoming; only `22/tcp` + `80,443/tcp` (Nginx Full) allowed | ✅ |
+| OS | Ubuntu 24.04.4 LTS | — |
+
+**Open findings (operator decision — not auto-applied; live-sshd changes risk lockout):**
+1. `PasswordAuthentication no` — key access is proven (CD deploys succeed via key), so this closes the
+   password brute-force surface with no expected lockout. Apply in `/etc/ssh/sshd_config.d/` + `sshd -t` +
+   reload (keep the current session open to verify before disconnecting).
+2. Install fail2ban (`sshd` jail) for defense-in-depth on port 22.
+3. Optional: `X11Forwarding no`.
+
+App-layer brute-force is separately mitigated by Better Auth rate limiting (`/sign-in/email` 10/60s).
