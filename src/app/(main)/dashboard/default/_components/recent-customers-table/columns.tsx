@@ -33,7 +33,7 @@ export const recentCustomersColumns: ColumnDef<RecentCustomerRow>[] = [
         <Checkbox
           checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all customers on this page"
+          aria-label="Select all accounts on this page"
         />
       </div>
     ),
@@ -50,7 +50,7 @@ export const recentCustomersColumns: ColumnDef<RecentCustomerRow>[] = [
   },
   {
     accessorKey: "name",
-    header: "Customer",
+    header: "Account",
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
         <span className="flex size-8 items-center justify-center rounded-md border bg-muted">
