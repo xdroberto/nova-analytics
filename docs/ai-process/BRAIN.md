@@ -26,6 +26,18 @@ group (own minimal layout, no sidebar), keeping /dashboard/* protected. Then Tas
 - Side effect: biome check --write normalized formatting across ~19 files (repo toolchain,
   bundled into b39a085).
 
+## Phase 3 review outcome (PR #3 — MERGE AFTER FIXES; 4 MINOR + 1 NIT, no MAJOR)
+- FIXED: marketing wrapper now also sets native `color-scheme: dark` (ThemeBootScript pins it
+  to the user's app preference — default light — leaving dark landing with light scrollbars).
+- FIXED: landing e2e anchors the hero CTA to the hero's own section (was positional .nth(1)
+  across three identical links). NIT fixed: unused `geist` package uninstalled.
+- ACCEPTED AS DECISION (not a bug): `/` no longer auto-redirects authenticated users to the
+  dashboard. Rationale: keeps the landing fully static (perf), matches modern SaaS convention,
+  and lets a logged-in reviewer/demo still see the landing. The proxy already bounces
+  /login /signup to the dashboard for cookie-holders.
+- METHOD NOTE for Phase 5 QA: scrollWidth-based overflow test is blind to transform-driven
+  visual overflow — complement with getBoundingClientRect on key elements or real-browser QA.
+
 ## Model/effort assignments (Phase 3)
 | Task | Nature | Model | Effort | Executor |
 |---|---|---|---|---|
