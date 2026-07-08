@@ -60,10 +60,13 @@ model/effort for Phase 5: propose at phase open (model-strategist).
 - **Node/npm pin (root cause of the PR#6 lock break):** add `.nvmrc` (22) + `"engines": {"node":"22.x"}`
   in package.json; consider `engine-strict=true` in `.npmrc` so npm 11 (Node 24) can't silently
   re-desync the lockfile against CI/Docker/prod (Node 22 → npm 10). Highest-value item — prevents recurrence.
-- **Supply-chain hardening** (motivated by the 2025 npm registry attacks — chalk/debug crypto-clipper,
-  Shai-Hulud worm): evaluate `ignore-scripts=true` in `.npmrc`. VERIFY FIRST that nothing in our stack
-  needs a legit postinstall (test install + build + e2e green) before enabling — do NOT assume. Document
-  the verdict either way here; if adopted, add one line to README's stack section.
+- ✅ **Supply-chain hardening — ADOPTED (2026-07-08), verdict verified not assumed:** `ignore-scripts=true`
+  now in `.npmrc`. Empirical verify all green WITHOUT lifecycle scripts: `npm@10 ci --ignore-scripts` →
+  unit → `drizzle-kit push` (esbuild-kit path) → `next build` → **full e2e 10/10**. Install-script census:
+  esbuild ×4 + sharp — both ship prebuilt binaries via optionalDependencies, scripts not needed. Precedent:
+  the production Dockerfile ALREADY ran `npm ci --ignore-scripts` since Phase 4 (prod never ran them).
+  Trade-off documented: our `prepare` (husky) is skipped → README quickstart adds one-time `npm run prepare`
+  (existing clones unaffected — `core.hooksPath=.husky` persists in .git/config).
 - **Package-manager note (for ADR/limitations):** pnpm considered as a stricter client; deferred
   mid-trial (migration cost vs live review window). Registry supply-chain risk is client-agnostic anyway.
 - **npm-audit verdict (DONE 2026-07-08): 6 moderate, 0 runtime-exploitable for Nova.** (a) esbuild ≤0.24.2
