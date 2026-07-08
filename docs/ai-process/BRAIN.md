@@ -168,6 +168,16 @@ decision (ADR-004), auditor pre-deploy gate.
   `--repo xdroberto/nova-analytics` (or `--base develop` on PRs) to target the fork.
 
 ## Decisions log (newest first)
+- 2026-07-08: **repo-steward hygiene #1 DONE — 34 inherited fork branches pruned from origin.**
+  Deleted the origin∩upstream set (feat/* ×18, chore/* ×4, archive/* ×3, codex/* ×2, fix/* ×2,
+  migration/next15-tailwindv4, 3.0.0, eslint-compatibility-fixes, feature/prefs-and-style-fixes,
+  update-mail-sidebar) via safety-guarded `git push origin --delete` (aborts unless set==34 and no
+  protected ref). All 34 identical to upstream tips → recoverable (upstream public + full-SHA restore
+  log in scratchpad). `fetch --prune` also cleared 5 STALE `origin/feature/*` tracking refs — those
+  branches were already deleted on origin post-merge; all 5 tips confirmed MERGED→develop, local
+  branches kept, zero work lost. **origin now = develop + main only.** (BRAIN's earlier "~36" was an
+  estimate; true inherited-on-origin count = 34.) Reviewer-verified authorship on the two look-alike
+  branches (feature/prefs-and-style-fixes, feat/infra) = upstream's Arham Khan, not Roberto.
 - 2026-07-08: **repo-steward role added (Phase 4, adaptive process).** Two repo-hygiene slips
   (36 unpruned inherited branches; `deploy/remote-deploy.sh` swallowed by the `*.sh` gitignore,
   fixed 171fc1e) → new role owns the repo as a graded deliverable with MECHANICAL enforcement:
