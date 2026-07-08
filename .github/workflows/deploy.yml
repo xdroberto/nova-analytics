@@ -19,11 +19,13 @@ jobs:
       - uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.VPS_HOST }}
-          username: deploy
+          username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /home/deploy/nova
+            cd /opt/nova
             docker compose -f docker-compose.prod.yml pull web
             docker compose -f docker-compose.prod.yml up -d
             sleep 8
             curl -fsS http://127.0.0.1:3000/api/health || (docker compose -f docker-compose.prod.yml logs --tail 50 web && exit 1)
+            # Disk hygiene on the shared host: drop superseded image layers after every deploy.
+            docker image prune -f

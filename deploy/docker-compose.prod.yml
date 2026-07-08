@@ -1,22 +1,15 @@
+# Nova web container on the SHARED host (ADR-003 amendment).
+# Postgres is NOT here: it runs as an independent compose project
+# (/opt/shared-postgres) so Nova's lifecycle can never take the shared DB down.
+# mem_limit caps Nova's blast radius on the 2GB host.
 services:
   web:
     image: ghcr.io/xdroberto/nova-analytics:latest
     restart: always
-    env_file: /home/deploy/nova/.env
+    mem_limit: 512m
+    env_file: /opt/nova/.env
     ports: ["127.0.0.1:3000:3000"]
-    depends_on:
-      db: { condition: service_healthy }
-  db:
-    image: postgres:17-alpine
-    restart: always
-    environment:
-      POSTGRES_USER: nova
-      POSTGRES_DB: nova
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes: [pgdata:/var/lib/postgresql/data]
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U nova"]
-      interval: 5s
-      retries: 10
-volumes:
-  pgdata:
+    networks: [data]
+networks:
+  data:
+    external: true

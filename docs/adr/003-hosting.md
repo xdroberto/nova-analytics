@@ -29,9 +29,26 @@ an SSR demo app, and x86 avoids any ARM image-compatibility surface in the GHCR 
 **Trade-off, stated honestly:** a shared host means shared blast radius — a runaway Nova
 process could previously only kill Nova; now it could degrade the portfolio that must stay
 up during hiring. Mitigations: hard container memory limits (web + db) so Nova can never
-OOM the host, 2G swap as safety net, `restart: always` policies, and operating rules
-(static sites are never stopped; the only pause candidate is moonhouse, and only with
-explicit owner approval after reviewing measurements).
+OOM the host, swap enlarged 2G → 3G as safety net, `restart: always` policies, and
+operating rules (static sites are never stopped; the only pause candidate is moonhouse,
+and only with explicit owner approval after reviewing measurements).
+
+**Aggregate memory budget (1.9G RAM + 3G swap), sized to co-host a future IMCORE OS demo:**
+
+| Component | Steady state | Hard cap |
+|---|---|---|
+| OS baseline (kernel, systemd, nginx, sshd) | ~350–400M | — |
+| dockerd (post-restart; an idle daemon had bloated to 592M — restart reclaimed ~570M) | ~90–150M | — |
+| moonhouse (Python/systemd) | ~100M | — |
+| shared-postgres (nova DB now, `imcore_demo` later) | ~40–120M | 384M |
+| nova web | ~150–250M | 512M |
+| **Reserved for future IMCORE app** | — | **≥500M (RAM+swap)** |
+
+Steady state (~0.9–1.1G) fits in RAM with minimal swap. Worst case — every cap hit
+simultaneously plus the IMCORE reserve — leans on swap but stays contained: cgroup limits
+mean the OOM killer acts inside the offending container, never against the host or the
+static sites. Disk runs at ~82% (6.5G free) with two apps incoming → `docker image prune -f`
+runs after every deploy, in CI's SSH step and in any manual redeploy.
 
 - **The VPS never builds.** GitHub Actions builds and tests on every push; on `main` it
   builds the Docker image, pushes to GHCR (`ghcr.io/xdroberto/nova-analytics`), and
