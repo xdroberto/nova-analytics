@@ -3,13 +3,13 @@
 > Session boot: read this file → BRAIN.md → latest SESSION-LOG.md entry, in that order, before any action.
 
 ## North star (PRD deliverables)
-- [ ] Public repo fork with clear commits + README (stack, setup, env vars)
+- [x] Public repo fork with clear commits + README (stack, setup, env vars) — polished, badges, `SUBMISSION.md`
 - [x] Whitelabel: zero original-branding traces in visible UI
 - [x] Landing: hero + features + CTA, responsive, polished
 - [x] Working signup/login (self-hosted) → redirect to dashboard
 - [x] Live HTTPS deployment, stable through review window
-- [ ] Video walkthrough (5–10 min) + submission package + behavioral questionnaire
-- [ ] Bonus: process logs, CI/CD, tests, custom domain, monitoring/analytics
+- [ ] Video walkthrough (5–10 min) + submission package + behavioral questionnaire — **package ✅ (`SUBMISSION.md`)**; video + questionnaire pending (Roberto)
+- [x] Bonus: process logs, CI/CD, tests, custom domain, monitoring (analytics deferred by decision — ADR-004)
 
 ## Phases
 | # | Phase | Status | Exit criteria | Closed at (commit) |

@@ -71,21 +71,19 @@ Two sessions run concurrently with **no file collision**:
    into BRAIN/chat/logs again. `admin@novaanalytics.io` unchanged.
 
 ## Immediate next step (fresh session)
-Open **Phase 5 (Hardening)** — Tasks 25 (Vitest unit for pure logic: extract evaluateHealth,
-test), 26 (cross-browser/mobile QA matrix + load sanity `autocannon` + full adversarial
-`/code-review` on develop→main). AND Roberto flagged he wants to revisit **repo/landing/README
-key points** — treat as polish folded into Phase 5/6:
-- README currently minimal (rewritten in Phase 2) — expand for submission quality (badges,
-  screenshots, architecture link) at Task 27.
-- Landing is solid (Lighthouse 94/100) but Roberto may want copy/visual refinements.
-- Repo hygiene: consider a `.gitattributes` (`* text=auto eol=lf`) to kill the CRLF warnings;
-  the `*.sh` gitignore trap already bit once (deploy script) — now fixed with `!deploy/*.sh`.
-model/effort for Phase 5: propose at phase open (model-strategist).
+Phases 0–5 done + LIVE; **Phase 5.5 + 6 in flight** (see "Current position" + the ⚡ parallel-tracks
+section for the full picture). On THIS (diagrams/integration) track the pending items are:
+1. **Integrate the UI session's `feature/ui-landing-polish` PR** when it lands (integration duty).
+2. **Run the responsive audit @360/375/768/1024/1440** AFTER the new landing is in develop.
+3. When Roberto asks, **promote Phase 6 → main** via a develop→main PR (README badges, SUBMISSION.md,
+   diagrams go to prod).
+Phase-6 delivery drafts (SUBMISSION.md + README badges) are done; Roberto owns the video + behavioral
+questionnaire (two `TODO` placeholders in SUBMISSION.md). model/effort: propose at each phase open.
 
-## Repo hygiene backlog (Phase 5 batch — staged on branch `chore/repo-hygiene`, NOT in PR #6)
-- **Node/npm pin (root cause of the PR#6 lock break):** add `.nvmrc` (22) + `"engines": {"node":"22.x"}`
-  in package.json; consider `engine-strict=true` in `.npmrc` so npm 11 (Node 24) can't silently
-  re-desync the lockfile against CI/Docker/prod (Node 22 → npm 10). Highest-value item — prevents recurrence.
+## Repo hygiene batch (Phase 5 — ✅ ALL COMPLETE, shipped to main via PR #7)
+- ✅ **Node/npm pin (DONE):** `.nvmrc` (22) + advisory `"engines": {"node":"22.x"}` shipped. (`engine-strict`
+  deferred — it would block Roberto's Node-24 local; revisit if local moves to 22.) Prevents the PR#6
+  lockfile-desync class of bug.
 - ✅ **Supply-chain hardening — ADOPTED (2026-07-08), verdict verified not assumed:** `ignore-scripts=true`
   now in `.npmrc`. Empirical verify all green WITHOUT lifecycle scripts: `npm@10 ci --ignore-scripts` →
   unit → `drizzle-kit push` (esbuild-kit path) → `next build` → **full e2e 10/10**. Install-script census:
@@ -101,7 +99,9 @@ model/effort for Phase 5: propose at phase open (model-strategist).
   CSS tooling; the XSS needs untrusted CSS input, no such path in Nova). No trivial fix — `audit fix --force`
   = breaking downgrades (next→9.3.3, drizzle-kit→0.18.1), rejected; both await upstream transitive bumps.
   ACCEPT + monitor; optional Phase-5: npm `overrides` to force patched postcss/esbuild IF build+e2e stay green.
-- Also still queued: `.gitattributes` (`* text=auto eol=lf`, CRLF); README submission polish (Task 27).
+- ✅ Also DONE: `.gitattributes` (`* text=auto eol=lf`, churn=0); README submission polish (badges +
+  `SUBMISSION.md` link, Task 27). Only carry-over follow-ups: rate-limit `trustedProxies` + RBAC (in
+  `docs/limitations.md`).
 
 ## How the live deploy works (topology recap for a cold session)
 - Host: existing Hetzner CPX11 178.156.248.110 (Ubuntu 24.04.4), SHARED with portfolio +
