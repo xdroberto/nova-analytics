@@ -10,7 +10,9 @@ const nextConfig = {
   },
   reactCompiler: true,
   compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
+    // Keep console.error in prod (server-side error visibility — incl. the pg pool
+    // idle-error handler in src/lib/db.ts); strip the noisier console.* levels.
+    removeConsole: process.env.NODE_ENV === "production" ? { exclude: ["error"] } : false,
   },
   async redirects() {
     return [
