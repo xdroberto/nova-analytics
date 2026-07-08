@@ -1,7 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
 import { CircleUser, CreditCard, EllipsisVertical, LogOut, MessageSquareDot } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -28,11 +26,12 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
-  const router = useRouter();
-
   async function handleLogout() {
     await signOut();
-    router.push("/login");
+    // Hard navigation (not router.push): a soft nav leaves the dashboard SPA and
+    // its client Router Cache alive, so Back could restore prefetched authenticated
+    // RSC and let a logged-out user browse/interact. A full load tears that down.
+    window.location.href = "/login";
   }
 
   return (
