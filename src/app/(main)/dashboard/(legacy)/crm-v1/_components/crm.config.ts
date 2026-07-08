@@ -234,8 +234,8 @@ export const recentLeadsData = [
   },
   {
     id: "L-1001",
-    name: "Shadcn",
-    company: "Shadcn/ui",
+    name: "Sarah Parker",
+    company: "Northstar Labs",
     status: "Qualified",
     source: "Website",
     lastActivity: "2h ago",
@@ -307,7 +307,7 @@ export const recentLeadsData = [
   {
     id: "L-1015",
     name: "Toby",
-    company: "Shadcn UI Kit ",
+    company: "Cinder Health",
     status: "Negotiation",
     source: "Other",
     lastActivity: "2d ago",

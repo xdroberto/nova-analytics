@@ -23,7 +23,10 @@ wait_healthy() {
 prev_image=$($COMPOSE ps -q web 2>/dev/null | xargs -r docker inspect --format '{{.Image}}' 2>/dev/null || true)
 echo "previous image: ${prev_image:-<none, first deploy>}"
 
-$COMPOSE pull web
+# Guard the pull: without `set -e`, a failed pull would otherwise fall through to
+# `up -d` (a no-op that keeps the OLD container), pass the health check against the
+# stale app, and report a green deploy that never actually shipped the new image.
+$COMPOSE pull web || { echo "❌ image pull failed — aborting; previous container keeps running"; exit 1; }
 $COMPOSE up -d
 
 if wait_healthy 20; then

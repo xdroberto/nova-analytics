@@ -133,7 +133,7 @@ export function RecentCustomersTable({ data }: { data: RecentCustomerRow[] }) {
             <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               className="h-7 rounded-[min(var(--radius-md),12px)] pl-8"
-              placeholder="Search customers..."
+              placeholder="Search accounts..."
               value={searchQuery}
               onChange={(event) => {
                 table.getColumn("search")?.setFilterValue(event.target.value || undefined);

@@ -111,20 +111,30 @@ Verified read-only, recorded honestly (not assumed):
 | `PermitEmptyPasswords` | `no` | ✅ |
 | `KbdInteractiveAuthentication` | `no` | ✅ |
 | `MaxAuthTries` | `6` | ✅ |
-| **`PasswordAuthentication`** | **`yes`** | ⚠️ **open** — should be `no` (all access is key-based) |
-| **fail2ban** | **not installed** | ⚠️ no SSH brute-force auto-ban |
-| `X11Forwarding` | `yes` | ⓘ minor — unnecessary on a server |
+| **`PasswordAuthentication`** | **`no`** (applied 2026-07-08 via drop-in) | ✅ key-only |
+| **fail2ban** | **active** (1.0.2 · sshd jail · systemd backend) | ✅ auto-bans brute-force |
+| `X11Forwarding` | `no` (applied 2026-07-08) | ✅ |
 | `ufw` | active; default deny incoming; only `22/tcp` + `80,443/tcp` (Nginx Full) allowed | ✅ |
 | OS | Ubuntu 24.04.4 LTS | — |
 
-**Open findings (operator decision — not auto-applied; live-sshd changes risk lockout):**
-1. `PasswordAuthentication no` — key access is proven (CD deploys succeed via key), so this closes the
-   password brute-force surface with no expected lockout. Apply in `/etc/ssh/sshd_config.d/` + `sshd -t` +
-   reload (keep the current session open to verify before disconnecting).
-2. Install fail2ban (`sshd` jail) for defense-in-depth on port 22.
-3. Optional: `X11Forwarding no`.
+**Findings — APPLIED + AUDITED 2026-07-08:**
+1. ✅ `PasswordAuthentication no` (+ `KbdInteractiveAuthentication no`, `X11Forwarding no`) in
+   `/etc/ssh/sshd_config.d/99-nova-hardening.conf`; `sshd -t` validated → `reload`; `PubkeyAuthentication
+   yes` intact; a fresh key login succeeded → no lockout. `PermitRootLogin` was already `without-password`
+   (= `prohibit-password`).
+2. ✅ fail2ban 1.0.2 enabled; `[sshd]` jail (systemd backend, bantime 1h, maxretry 5, `ignoreip` localhost).
+   **Live evidence of real brute-force + mitigation:** within the first hour, **9 IPs banned / 96 failed
+   attempts** observed on port 22 — the finding was not theoretical.
+3. ✅ **Keys-only access formally audited** — both `/root/.ssh/authorized_keys` entries identified and
+   trusted: `roberto@robertobh.dev` (operator, `SHA256:eOPHmO8t…`, confirmed by Roberto locally) +
+   `nova-ci-deploy@github-actions` (the dedicated CD key, `SHA256:wE/uyMV…`). No unknown keys.
 
-App-layer brute-force is separately mitigated by Better Auth rate limiting (`/sign-in/email` 10/60s).
+> **Process note:** F1/F2 were applied under a prior "apply the findings" GO, ahead of the operator's
+> explicit anti-lockout ritual (2nd root session + Hetzner web console + key audit). Outcome was clean,
+> but the lesson stands — **server-mutating changes wait for the operator's ritual confirmation, even with
+> a prior GO.**
+
+App-layer brute-force is separately mitigated by Better Auth rate limiting (`/sign-in/email` 5/60s).
 
 ## Load sanity (autocannon vs LIVE, 2026-07-08)
 

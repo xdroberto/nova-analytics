@@ -1,4 +1,4 @@
-import { DollarSign, TrendingDown, TrendingUp, UserPlus, Users, Waves } from "lucide-react";
+import { Activity, Target, TrendingDown, TrendingUp, UserPlus, Users } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,20 +10,20 @@ export function MetricCards() {
         <CardHeader>
           <CardTitle>
             <div className="flex size-7 items-center justify-center rounded-lg border bg-muted text-muted-foreground">
-              <DollarSign className="size-4" />
+              <Users className="size-4" />
             </div>
           </CardTitle>
-          <CardDescription>Total Revenue</CardDescription>
+          <CardDescription>Monthly Active Users</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-1">
           <div className="flex flex-wrap items-center gap-2">
-            <div className="font-medium text-3xl tabular-nums leading-none tracking-tight">$1,250.00</div>
+            <div className="font-medium text-3xl tabular-nums leading-none tracking-tight">128,420</div>
             <Badge>
               <TrendingUp className="size-3" />
               +12.5%
             </Badge>
           </div>
-          <p className="text-muted-foreground text-sm">Visitors for the last 6 months</p>
+          <p className="text-muted-foreground text-sm">Unique active users, last 30 days</p>
         </CardContent>
       </Card>
 
@@ -34,11 +34,11 @@ export function MetricCards() {
               <UserPlus className="size-4" />
             </div>
           </CardTitle>
-          <CardDescription>New Customers</CardDescription>
+          <CardDescription>New Signups</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-1">
           <div className="flex flex-wrap items-center gap-2">
-            <div className="font-medium text-3xl tabular-nums leading-none tracking-tight">1,234</div>
+            <div className="font-medium text-3xl tabular-nums leading-none tracking-tight">3,240</div>
             <Badge variant="destructive">
               <TrendingDown className="size-3" />
               -20%
@@ -52,17 +52,17 @@ export function MetricCards() {
         <CardHeader>
           <CardTitle>
             <div className="flex size-7 items-center justify-center rounded-lg border bg-muted text-muted-foreground">
-              <Users className="size-4" />
+              <Activity className="size-4" />
             </div>
           </CardTitle>
-          <CardDescription>Active Accounts</CardDescription>
+          <CardDescription>Sessions</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-1">
           <div className="flex flex-wrap items-center gap-2">
-            <div className="font-medium text-3xl tabular-nums leading-none tracking-tight">45,678</div>
+            <div className="font-medium text-3xl tabular-nums leading-none tracking-tight">512,900</div>
             <Badge>
               <TrendingUp className="size-3" />
-              +12.5%
+              +11.2%
             </Badge>
           </div>
           <p className="text-muted-foreground text-sm">Engagement exceeds targets</p>
@@ -73,20 +73,20 @@ export function MetricCards() {
         <CardHeader>
           <CardTitle>
             <div className="flex size-7 items-center justify-center rounded-lg border bg-muted text-muted-foreground">
-              <Waves className="size-4" />
+              <Target className="size-4" />
             </div>
           </CardTitle>
-          <CardDescription>Growth Rate</CardDescription>
+          <CardDescription>Conversion Rate</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-1">
           <div className="flex flex-wrap items-center gap-2">
-            <div className="font-medium text-3xl tabular-nums leading-none tracking-tight">4.5%</div>
+            <div className="font-medium text-3xl tabular-nums leading-none tracking-tight">4.8%</div>
             <Badge>
               <TrendingUp className="size-3" />
-              +4.5%
+              +0.4pp
             </Badge>
           </div>
-          <p className="text-muted-foreground text-sm">Meets growth projections</p>
+          <p className="text-muted-foreground text-sm">Meets conversion targets</p>
         </CardContent>
       </Card>
     </div>

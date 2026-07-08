@@ -1,8 +1,14 @@
 # Nova Analytics
 
+[![CI](https://github.com/xdroberto/nova-analytics/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/xdroberto/nova-analytics/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-22.x-brightgreen.svg)](.nvmrc)
+
 **See your data become light.** Nova Analytics turns raw numbers into decisions your whole team can read — real-time dashboards, self-hosted and private.
 
-> Live: `https://nova.robertobh.dev` (Phase 4) · Built with Next.js 16, TypeScript, Tailwind CSS v4, shadcn/ui, Better Auth, Drizzle ORM, and Postgres 17.
+> **Live:** https://nova.robertobh.dev · Built with Next.js 16, TypeScript, Tailwind CSS v4, shadcn/ui, Better Auth, Drizzle ORM, and Postgres 17 — deployed to a Hetzner VPS with rollback-safe push-to-deploy CI/CD and uptime monitoring.
+>
+> **Reviewers:** [`SUBMISSION.md`](SUBMISSION.md) has the live URL, credentials, and what was built. Architecture diagrams: [`docs/architecture.md`](docs/architecture.md).
 
 ## Quickstart
 

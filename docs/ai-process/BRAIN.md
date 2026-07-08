@@ -4,11 +4,14 @@
 > every significant action, (4) never reconstruct state from chat memory.
 
 ## Current position
-- Phase: 4 (Deploy) ✅ **FULLY CLOSED** (promoted to main via PR #6 = merge 4325946; UptimeRobot monitor
-  now live). **LIVE at https://nova.robertobh.dev** — TLS, health ok, auth works, security headers live,
-  push-to-deploy verified end-to-end from a PR merge (~3m09s: build-push 2m46s + deploy 16s).
-- Next: **Phase 5 (Hardening)** — Vitest units, cross-browser/mobile QA matrix, adversarial review; plus
-  the queued repo-hygiene batch (see backlog) + repo/landing/README polish.
+- Phase: **5 (Hardening) ✅ CLOSED + LIVE in production** (promoted via PR #7 = merge b531e52; deploy
+  success, health ok). Shipped: Vitest + `evaluateHealth`, the security bypass suite, explicit Better Auth
+  rate limiting, supply-chain `ignore-scripts`, Node-22 toolchain pin, and an adversarial review (1 HIGH
+  auth bypass — orphaned /chat + /mail — fixed). **LIVE at https://nova.robertobh.dev.**
+- Now: **Phase 5.5 (UI/UX & diagrams) — PARALLEL TRACKS** (see the ⚡ section above). THIS session: diagram
+  suite ✅ DONE (6, verified rendering on GitHub); responsive audit @5 breakpoints DEFERRED until the new
+  landing lands; integration duty = review/merge the UI session's PR. UI session runs on
+  `feature/ui-landing-polish` (aurora-tech v2 + landing, screenshot-gated).
 - Session note: a fresh session boots from ROADMAP→BRAIN→latest SESSION-LOG with zero chat context.
 
 ## ✅ Commitlint gate — first live run RESOLVED (PR #6)
@@ -20,25 +23,50 @@
   conventional-commits-parser@6.4.0"). Fixed by regenerating with npm 10 (`fix(deps)` 4bc3d81).
   See Decisions log + the Phase-5 hygiene backlog (node/npm pin, to prevent recurrence).
 
+## 🎨 Parallel UI session (Phase 5.5 — landing redesign) — ACTIVE
+A separate UI/UX session runs the landing redesign on branch `feature/ui-landing-polish` in an
+**isolated git worktree** (`../nova-analytics-landing`, off origin/develop). Scope: ONLY
+`src/app/(marketing)/**`, design tokens (`src/app/globals.css`), design-reference evidence, and this
+note. It does NOT touch auth/proxy/deploy/CI/scripts. Foundation = aurora-tech **v2** tokens (operator
+design, see Decisions log). Screenshot-gated per batch; integration + promotion are the Lead's/Roberto's.
+The Lead's Phase-5 work on `develop` proceeds independently (no app-code overlap by construction).
+
 ## ⚖ ui-ux-pro-max skill — HARD RULES (installed 2026-07-08, for Phase 5.5 only)
 Installed globally (`~/.claude/skills/ui-ux-pro-max`, MIT, nextlevelbuilder) as a **read-only knowledge
 base**. Its front-matter auto-triggers broadly and WILL offer its 161 palettes / 57 font pairings /
 "design systems" — **those are OFF-LIMITS for Nova.** Non-negotiable:
-1. **Nova's aurora-tech design tokens are LAW.** The skill NEVER introduces a new palette, font, style, or
-   design-system; ignore every color/typography/style output it produces.
+1. **Nova's aurora-tech v2 design tokens are LAW** (operator redesign, Phase 5.5 — palette extracted from
+   `docs/design-reference/landing-v2.html`, single source of truth in `src/app/globals.css`). The skill
+   NEVER introduces a new palette, font, style, or design-system; ignore every color/typography/style
+   output it produces.
 2. **Consult ONLY for:** UX guideline checklists, dashboard chart-type selection guidance, WCAG/contrast +
    interaction-timing rules, and anti-pattern lists. Knowledge only — do NOT run its Python scripts
    (supply-chain discipline; the documented rules stand alone).
 3. **Every visual change ships behind Roberto's screenshot approval BEFORE merge** (Phase 5.5 exit crit).
 4. **Gated to Phase 5.5** — do not let it drive Phase 5 hardening.
 
+## ⚡ Phase 5.5 — PARALLEL TRACKS (active split 2026-07-08 — BOTH sessions read this)
+Two sessions run concurrently with **no file collision**:
+- **Diagrams + integration session (this one):** Mermaid diagram suite in `docs/architecture.md`
+  (architecture · DB ERD · auth flow · CI/CD · VPS topology · git flow — GitHub renders ` ```mermaid `
+  natively). Owns **integration duty**: reviews + merges the UI session's PR. Runs the **responsive audit
+  @360/375/768/1024/1440 LAST**, only AFTER the new landing lands in develop (auditing the old UI = waste).
+  Touches: `docs/**` only.
+- **UI session (isolated worktree `feature/ui-landing-polish`):** aurora-tech **v2** tokens + landing
+  redesign, **screenshot-gated by Roberto before merge**. Must honor the ui-ux-pro-max HARD RULES above
+  (aurora-tech is LAW). Touches: `src/app/(marketing)/**` + theme preset sources; NOT docs, NOT the
+  auth/security surface.
+- **Collision guard:** diagrams = docs-only; UI = marketing/theme-only. The responsive audit blocks on the
+  UI merge. If either track needs a shared file, coordinate here first.
+
 ## ⚠ Pending Roberto actions (not code — external/his account)
-0. **VPS SSH hardening (B.3 findings, verified `sshd -T` 2026-07-08 — see docs/deployment.md).** Mostly
-   solid (root is key-only `without-password`; ufw active deny-by-default 22/80/443; empty-pw off), BUT
-   two open findings: **`PasswordAuthentication yes`** (should be `no` — key access proven via CD, no
-   expected lockout) and **fail2ban NOT installed**. Not auto-applied — live-sshd edits risk lockout, and
-   it's Roberto's box. Recommend: set `PasswordAuthentication no` (with `sshd -t` + reload + keep session
-   open) + install fail2ban. App-layer brute-force already covered by the new Better Auth rate limit.
+0. ✅ **VPS SSH hardening — APPLIED (2026-07-08, with Roberto's lifeline session + anti-lockout protocol).**
+   `PasswordAuthentication no` + `KbdInteractiveAuthentication no` + `X11Forwarding no` (drop-in
+   `99-nova-hardening.conf`; `sshd -t` validated → `reload`; a fresh key login verified → no lockout;
+   `PubkeyAuthentication yes` intact). fail2ban 1.0.2 active (`[sshd]` jail, systemd backend) — validated
+   the finding on install: the port was under active brute-force, **6 IPs banned / 57 failed attempts on
+   the first scan.** Details in docs/deployment.md. Root stays key-only; ufw 22/80/443. No Roberto action
+   left here.
 1. ✅ **UptimeRobot — LIVE (2026-07-08).** HTTP(s) monitor on `/api/health`, 5-min interval, email alerts,
    SSL-expiry watch included (Roberto's account; screenshot captured). Was the last Phase-4 item →
    **Phase 4 now FULLY CLOSED.**
@@ -47,25 +75,25 @@ base**. Its front-matter auto-triggers broadly and WILL offer its 161 palettes /
    CORRECTION: far less than docker's advertised "21.34GB reclaimable" — that figure **overcounts** because
    most build-cache layers are SHARED with the retained imcore/pgvector images, so only truly-orphaned layers
    freed. Further real reclaim would need deleting imcore's IMAGES (~1.6GB) — Roberto's call, not build cache.
-3. Reviewer creds admin@novaanalytics.io / NovaReview2026! are live + public (in repo, by design
-   for review). Rotate at Task 29 (SUBMISSION) if desired.
+3. ✅ Reviewer creds **ROTATED 2026-07-08** (Phase 6): old `NovaReview2026!` (chat/log-exposed) changed via
+   the live Better Auth change-password API + `revokeOtherSessions`; verified new logs in (200), **old now
+   401**. The current password lives ONLY in `SUBMISSION.md` (public by design for review) — do NOT paste it
+   into BRAIN/chat/logs again. `admin@novaanalytics.io` unchanged.
 
 ## Immediate next step (fresh session)
-Open **Phase 5 (Hardening)** — Tasks 25 (Vitest unit for pure logic: extract evaluateHealth,
-test), 26 (cross-browser/mobile QA matrix + load sanity `autocannon` + full adversarial
-`/code-review` on develop→main). AND Roberto flagged he wants to revisit **repo/landing/README
-key points** — treat as polish folded into Phase 5/6:
-- README currently minimal (rewritten in Phase 2) — expand for submission quality (badges,
-  screenshots, architecture link) at Task 27.
-- Landing is solid (Lighthouse 94/100) but Roberto may want copy/visual refinements.
-- Repo hygiene: consider a `.gitattributes` (`* text=auto eol=lf`) to kill the CRLF warnings;
-  the `*.sh` gitignore trap already bit once (deploy script) — now fixed with `!deploy/*.sh`.
-model/effort for Phase 5: propose at phase open (model-strategist).
+Phases 0–5 done + LIVE; **Phase 5.5 + 6 in flight** (see "Current position" + the ⚡ parallel-tracks
+section for the full picture). On THIS (diagrams/integration) track the pending items are:
+1. **Integrate the UI session's `feature/ui-landing-polish` PR** when it lands (integration duty).
+2. **Run the responsive audit @360/375/768/1024/1440** AFTER the new landing is in develop.
+3. When Roberto asks, **promote Phase 6 → main** via a develop→main PR (README badges, SUBMISSION.md,
+   diagrams go to prod).
+Phase-6 delivery drafts (SUBMISSION.md + README badges) are done; Roberto owns the video + behavioral
+questionnaire (two `TODO` placeholders in SUBMISSION.md). model/effort: propose at each phase open.
 
-## Repo hygiene backlog (Phase 5 batch — staged on branch `chore/repo-hygiene`, NOT in PR #6)
-- **Node/npm pin (root cause of the PR#6 lock break):** add `.nvmrc` (22) + `"engines": {"node":"22.x"}`
-  in package.json; consider `engine-strict=true` in `.npmrc` so npm 11 (Node 24) can't silently
-  re-desync the lockfile against CI/Docker/prod (Node 22 → npm 10). Highest-value item — prevents recurrence.
+## Repo hygiene batch (Phase 5 — ✅ ALL COMPLETE, shipped to main via PR #7)
+- ✅ **Node/npm pin (DONE):** `.nvmrc` (22) + advisory `"engines": {"node":"22.x"}` shipped. (`engine-strict`
+  deferred — it would block Roberto's Node-24 local; revisit if local moves to 22.) Prevents the PR#6
+  lockfile-desync class of bug.
 - ✅ **Supply-chain hardening — ADOPTED (2026-07-08), verdict verified not assumed:** `ignore-scripts=true`
   now in `.npmrc`. Empirical verify all green WITHOUT lifecycle scripts: `npm@10 ci --ignore-scripts` →
   unit → `drizzle-kit push` (esbuild-kit path) → `next build` → **full e2e 10/10**. Install-script census:
@@ -81,7 +109,9 @@ model/effort for Phase 5: propose at phase open (model-strategist).
   CSS tooling; the XSS needs untrusted CSS input, no such path in Nova). No trivial fix — `audit fix --force`
   = breaking downgrades (next→9.3.3, drizzle-kit→0.18.1), rejected; both await upstream transitive bumps.
   ACCEPT + monitor; optional Phase-5: npm `overrides` to force patched postcss/esbuild IF build+e2e stay green.
-- Also still queued: `.gitattributes` (`* text=auto eol=lf`, CRLF); README submission polish (Task 27).
+- ✅ Also DONE: `.gitattributes` (`* text=auto eol=lf`, churn=0); README submission polish (badges +
+  `SUBMISSION.md` link, Task 27). Only carry-over follow-ups: rate-limit `trustedProxies` + RBAC (in
+  `docs/limitations.md`).
 
 ## How the live deploy works (topology recap for a cold session)
 - Host: existing Hetzner CPX11 178.156.248.110 (Ubuntu 24.04.4), SHARED with portfolio +
@@ -217,6 +247,14 @@ decision (ADR-004), auditor pre-deploy gate.
   a fresh clone).
 
 ## Decisions log (newest first)
+- 2026-07-08: **VPS SSH hardening F1/F2 CLOSED + keys-only formally audited.** `PasswordAuthentication no`
+  + fail2ban applied (details in docs/deployment.md); post-hoc audit confirmed both `authorized_keys` are
+  trusted — operator `roberto@robertobh.dev` + `nova-ci-deploy` CD key, no unknowns. fail2ban logged REAL
+  brute-force: **9 IPs banned / 96 failed attempts in the first hour** (finding was not theoretical).
+  **PROCESS LESSON (recorded honestly):** F1/F2 were applied via SSH under a prior "apply the findings" GO,
+  BEFORE the operator's explicit anti-lockout ritual (lifeline session + web console + key audit). Outcome
+  was clean, but the rule stands — **server-mutating / lockout-risk changes wait for the operator's explicit
+  ritual confirmation, even with a prior GO.**
 - 2026-07-08: **Phase 5 B.4 — adversarial capstone review + load sanity; findings dispositioned.**
   Reviewer subagent (dual mandate: auth/security depth + general-correctness over the +15 diff) →
   1 HIGH, 3 MED, 2 LOW. **FIXED #1 HIGH:** orphaned top-level `/chat` + `/mail` served the app shell to

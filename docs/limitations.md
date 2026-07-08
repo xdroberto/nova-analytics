@@ -48,6 +48,16 @@ honest list of what is intentionally out of scope or imperfect, kept current as 
   (display-only; the `user` table has no role column), so there is a single access tier — every logged-in
   user has full `/dashboard/*` access. Fine for a single-reviewer trial; a real product needs a DB-backed
   role + server-side authorization before any role-gated feature.
+- **No Content-Security-Policy header** (audit finding — DEFERRED on purpose). The other baseline headers
+  ship (HSTS, X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy); CSP is the defense-in-depth
+  layer against XSS. Deferred right before the deadline because a strict `script-src`/`style-src` can silently
+  break Next.js inline styles/scripts and needs careful per-directive testing. No proven injection path today
+  (no `dangerouslySetInnerHTML` over user data; the arbitrary cookie-read server action was removed in the
+  security-audit batch). Next step: ship a report-only CSP first, tune, then enforce.
+- **Forced-logout CSRF on `GET /api/session/clear`** (audit finding — DEFERRED, low). A cross-site
+  `<img src=".../api/session/clear">` can force-log-out a visitor — nuisance only: no data exposure, deletion
+  is scoped to `better-auth*` cookie names, and the redirect target is a static same-origin `/login`. Proper
+  fix is a POST with an Origin/CSRF check; deferred as cosmetic for the trial.
 
 ## Process slips caught & fixed (repo hygiene)
 

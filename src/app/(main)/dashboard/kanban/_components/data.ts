@@ -125,9 +125,9 @@ export const initialBoard: BoardState = {
   ],
   planned: [
     {
-      id: "electron-app-shell",
-      title: "Electron app shell",
-      description: "Create local-first desktop shell with React, Tailwind, and shadcn/ui.",
+      id: "data-retention-controls",
+      title: "Data retention controls",
+      description: "Add configurable data-retention windows and per-project purge policies.",
       priority: "High",
       dueDate: "Jun 20",
       progress: 25,

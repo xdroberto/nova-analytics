@@ -22,6 +22,9 @@ export const auth = betterAuth({
     max: 100,
     customRules: {
       "/sign-in/email": { window: 60, max: 5 },
+      // Throttle account creation too — the global 100/10s is far too loose for a
+      // credential-provisioning endpoint (mass-signup spam / user enumeration).
+      "/sign-up/email": { window: 60, max: 10 },
     },
   },
 });
