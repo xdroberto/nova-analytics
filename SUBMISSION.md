@@ -23,7 +23,9 @@ rate-limited and sessions are revocable.
 
 **Core (PRD requirements):**
 - **Whitelabel** — zero original-template branding remains visible; CI-enforced by a branding gate.
-- **Landing** — hero + features + CTA, dark-first, responsive (Lighthouse 94 mobile / 100 desktop).
+- **Landing** — hero + features + CTA, dark-first, responsive. Lighthouse: desktop **100**; the
+  richer landing-v2 mobile page scores **~89–90** performance with **CLS 0** and low blocking time
+  (the retired v1 static landing scored 94 mobile — superseded by the v2 redesign).
 - **Self-hosted auth** — email/password via Better Auth + Drizzle + Postgres (no managed vendors).
   Signup/login → dashboard; revocable DB-backed sessions; `/dashboard/*` guarded by an optimistic edge
   check plus an authoritative server-side session check.

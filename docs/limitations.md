@@ -64,10 +64,11 @@ honest list of what is intentionally out of scope or imperfect, kept current as 
 Two repository-hygiene slips got through in early phases; both are fixed, and the safeguard
 below now prevents recurrence:
 
-1. **36 inherited upstream branches** were never pruned after the fork (distributed ownership,
+1. **34 inherited upstream branches** were never pruned after the fork (distributed ownership,
    no single guardian of branch hygiene). **Fixed 2026-07-08:** the `repo-steward` pruned the 34
    inherited branches from `origin` (safety-guarded, with a full-SHA reversibility log archived in
-   `evidence/`); `origin` now carries only `develop` + `main`.
+   `evidence/`); `origin` now carries only `develop`/`main` plus whatever short-lived working branches
+   are in flight.
 2. **A deploy script was silently swallowed by `.gitignore`.** The Phase-4 `*.sh` ignore rule
    only excepted `scripts/*.sh`, so `deploy/remote-deploy.sh` was untracked; the first
    push-to-deploy failed at the `scp` step (`tar: empty archive`) with no deployment and no
@@ -76,3 +77,37 @@ below now prevents recurrence:
 **Safeguard (Phase 4):** a `repo-steward` role was added with **mechanical** enforcement — a
 commitlint CI gate (conventional commits, scoped strictly to each PR's own commit range, never
 inherited history) — so repo cleanliness is checked by CI, not left to good intentions.
+
+## Product surface: template scaffolding still present
+
+- **Off-brand demo modules removed from the nav, routes still in the build.** The whitelabel /
+  coherence work targets the primary analytics pages (Default, Analytics, E-commerce, Usage & Billing).
+  The most off-brand template modules — Academy, Logistics, Infrastructure, and the "Legacy" V1
+  dashboards (personal-finance demos) — were **removed from the sidebar** so they aren't user-visible,
+  but their routes still exist in the build; a production build would delete them outright. A handful
+  of generic admin modules (Mail, Chat, Calendar, Kanban, Tasks, Invoice, Users, Roles, CRM) remain in
+  the nav as template scaffolding — functional, but not part of the analytics story.
+- **Secondary-page metric coherence is partial.** Coherent Nova metrics were authored for the primary
+  pages; some secondary/legacy pages still carry template-flavored figures. This is documented
+  in-progress polish, not a data pipeline (the product runs on sample data by design).
+
+## Delivery & tooling honesty
+
+- **CD is not hard-gated on CI inside the pipeline.** `deploy.yml` triggers on push to `main` and does
+  not `needs`/`workflow_run` on `ci.yml`, so a red lint/unit/e2e would not itself block a deploy. The
+  real gates are (a) promotion goes through a develop→main **PR where full CI must pass** (quality + e2e
+  + commitlint), and (b) `deploy/remote-deploy.sh` is **rollback-safe** (health-retry → auto-rollback to
+  the previous image → exit 1). A `workflow_run`/branch-protection required-check gate is future work.
+- **e2e runs against the dev server in CI.** `playwright.config.ts` boots `next dev` rather than the
+  built/standalone server §8 of the design spec describes; the money-path + security-bypass coverage is
+  unchanged, but the exact prod server mode isn't exercised by e2e. Future: point the webServer at
+  `build && start`. Unit tests likewise cover the health endpoint + edge proxy, not yet the Zod
+  credential validators.
+- **The prod compose file isn't auto-shipped.** `deploy.yml` scps only `remote-deploy.sh`;
+  `deploy/docker-compose.prod.yml` was placed on the VPS during the first-deploy checklist, so repo
+  edits to it don't propagate automatically. Future: scp the compose file alongside the deploy script.
+- **Architecture diagrams are faithful but simplified.** The 6 Mermaid diagrams in
+  `docs/architecture.md` show the system's shape, not every column/edge: the ERD elides some
+  OAuth/`updated_at` columns (email-password only, per PRD non-goals), the CI→deploy edge is a logical
+  relationship (deploy isn't hard-gated on CI — see above), and `imcore` is drawn as a reserved/future
+  co-tenant. Documented simplifications, not inaccuracies.

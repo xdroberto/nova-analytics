@@ -17,7 +17,7 @@ git clone https://github.com/xdroberto/nova-analytics.git
 cd nova-analytics
 npm ci
 npm run prepare        # one-time: installs git hooks (skipped by ignore-scripts)
-cp .env.example .env   # fill BETTER_AUTH_SECRET (openssl rand -base64 32)
+cp .env.example .env   # fill BETTER_AUTH_SECRET (openssl rand -base64 32) and SEED_PASSWORD
 docker compose -f docker-compose.dev.yml up -d
 npx drizzle-kit push --force
 npm run seed
@@ -40,7 +40,7 @@ optimistic cookie check in `src/proxy.ts` plus an authoritative server-side sess
 | `DATABASE_URL` | Postgres connection string |
 | `BETTER_AUTH_SECRET` | Session signing secret |
 | `BETTER_AUTH_URL` | Public base URL of the app |
-| `SEED_PASSWORD` | Optional override for the seeded reviewer user |
+| `SEED_PASSWORD` | **Required** — password for the seeded reviewer/admin user; seeding fails closed if it is unset |
 
 ## AI development process
 

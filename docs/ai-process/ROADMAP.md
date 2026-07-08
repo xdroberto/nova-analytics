@@ -20,8 +20,8 @@
 | 3 | Landing | ✅ | Lighthouse ≥90 mobile; CTA→signup works | 6cd239e |
 | 4 | Deploy | ✅ | Public HTTPS + push-to-deploy + audit gate + uptime monitoring (UptimeRobot **LIVE**) | af6625c |
 | 5 | Hardening | ✅ | Full suite green in CI; review findings fixed; **security bypass suite green** (no-cookie / invalid / expired → deny·redirect; auth rate-limit responds) | b531e52 |
-| 5.5 | UI/UX polish & diagrams | 🔄 | (1) ✅ Mermaid diagram suite renders on GitHub (6 diagrams, verified); (2) ⬜ dashboard responsive audit @360/375/768/1024/1440 (deferred to after the new landing lands); (3) ⬜ micro-interaction polish approved by Roberto via screenshots BEFORE merge | — |
-| 6 | Delivery | ⬜ | PRD checklist 100% + final audit gate | — |
+| 5.5 | UI/UX polish & diagrams | 🔄 | (1) ✅ Mermaid diagram suite renders on GitHub (6 diagrams); (2) 🔄 formal responsive audit @360/375/768/1024/1440 not run as a discrete deliverable — e2e pins 375px no-overflow and the landing is live (noted in `limitations.md`); (3) ✅ landing v2 + micro-interaction polish merged (PR #8/#9/#11) + login-polish (PR #15) | 9eb31e3 |
+| 6 | Delivery | 🔄 | Package ✅ (SUBMISSION, README badges, creds rotated, `COST-REPORT.md`, `AUDIT-PRE-SUBMISSION.md`, v1.0.0 cut); final audit gate ✅; **video walkthrough + behavioral questionnaire pending (Roberto)** | — |
 
 ## Milestone log
 | Date | Milestone | Commit |
@@ -39,3 +39,10 @@
 | 2026-07-08 | UptimeRobot monitor LIVE (/api/health · 5-min · email + SSL-expiry) — **Phase 4 FULLY CLOSED** | 4325946 |
 | 2026-07-08 | **Phase 5 CLOSED + promoted to production** (PR #7 develop→main, 19 commits); adversarial review 1 HIGH fixed; deploy success, health ok | b531e52 |
 | 2026-07-08 | Phase 5.5 (1/3): Mermaid diagram suite (6) in docs/architecture.md — verified rendering on GitHub | 8c0acb0 |
+| 2026-07-08 | Landing v2 + micro-interaction polish merged (PR #8/#9/#11) → promoted to main (PR #13) | 12bce63 |
+| 2026-07-08 | Dashboard: coherent Nova metrics on default/analytics/ecommerce + finance reframed as Usage & Billing (PR #12) | d9cdccc |
+| 2026-07-08 | Security-audit batch: CSP/CSRF findings documented, all CI actions pinned to SHAs (PR #10) | 4208cdc |
+| 2026-07-08 | Login-polish: aurora background + trust badges on /login → main (PR #15) | 46d8359 |
+| 2026-07-08 | Logout/bfcache fix: Back can't show a cached dashboard after logout (PR #14) | 6178f19 |
+| 2026-07-08 | Landing v2 Lighthouse: desktop 100, mobile ~89–90 (CLS 0) — supersedes v1's 94-mobile static landing | 2306403 |
+| 2026-07-08 | Pre-submission audit (10-dimension multi-agent + adversarial verify) + UI seam trim + docs reconcile; `COST-REPORT.md` + `AUDIT-PRE-SUBMISSION.md` added; **v1.0.0 release cut** | f4758a0 |
