@@ -235,6 +235,14 @@ decision (ADR-004), auditor pre-deploy gate.
   a fresh clone).
 
 ## Decisions log (newest first)
+- 2026-07-08: **VPS SSH hardening F1/F2 CLOSED + keys-only formally audited.** `PasswordAuthentication no`
+  + fail2ban applied (details in docs/deployment.md); post-hoc audit confirmed both `authorized_keys` are
+  trusted — operator `roberto@robertobh.dev` + `nova-ci-deploy` CD key, no unknowns. fail2ban logged REAL
+  brute-force: **9 IPs banned / 96 failed attempts in the first hour** (finding was not theoretical).
+  **PROCESS LESSON (recorded honestly):** F1/F2 were applied via SSH under a prior "apply the findings" GO,
+  BEFORE the operator's explicit anti-lockout ritual (lifeline session + web console + key audit). Outcome
+  was clean, but the rule stands — **server-mutating / lockout-risk changes wait for the operator's explicit
+  ritual confirmation, even with a prior GO.**
 - 2026-07-08: **Phase 5 B.4 — adversarial capstone review + load sanity; findings dispositioned.**
   Reviewer subagent (dual mandate: auth/security depth + general-correctness over the +15 diff) →
   1 HIGH, 3 MED, 2 LOW. **FIXED #1 HIGH:** orphaned top-level `/chat` + `/mail` served the app shell to
