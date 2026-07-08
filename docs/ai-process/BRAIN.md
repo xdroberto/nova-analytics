@@ -208,6 +208,21 @@ decision (ADR-004), auditor pre-deploy gate.
   a fresh clone).
 
 ## Decisions log (newest first)
+- 2026-07-08: **Security bypass suite GREEN 🎥 + explicit rate limiting enabled (Phase 5, tasks 2–3).**
+  Vitest landed (evaluateHealth extracted+tested; 6 proxy characterization tests pin the optimistic
+  edge). e2e security suite (ordered: per-IP rate-limit hammering LAST so it can't poison logins):
+  headers regression (XFO/nosniff/Referrer-Policy) · anonymous 307→/login · get-session null ·
+  forged-cookie denied (authoritative getSession + /api/session/clear loop-breaker) · **literal
+  expired-session deny** (real signup → SQL `expires_at` to past → validly-signed cookie rejected by
+  the DB check — distinct defense layer from signature rejection, both now pinned) · repeated failed
+  sign-ins → 429. TDD honest: 429 test born RED (Better Auth rate limiting is prod-only by default,
+  `enabled ?? isProduction` verified in 1.6.23 source) → `rateLimit` enabled explicitly in auth.ts
+  (100/10s global; 10/60s on /sign-in/email; memory storage) → **full local e2e 10/10**.
+  **Incident during RED run (systematic-debugging):** auth POSTs 500'd with "Cannot find module
+  'better-auth/next-js'" — NOT an app bug: stale `.next/dev` Turbopack cache referencing the
+  pre-vitest-install node_modules layout (module existed on disk; `next build` resolved it fine).
+  Fix: kill dev server + `rm -rf .next`. Lesson: after any npm install that reshapes node_modules,
+  purge `.next` before trusting dev-server behavior (same family as the BRAIN dev-env gotcha).
 - 2026-07-08: **Phase 5.5 added + ui-ux-pro-max installed (operator-driven scope, Roberto).** New phase
   **5.5 "UI/UX polish & diagrams"** inserted between Hardening (5) and Delivery (6) — exit: (1) Mermaid
   diagram suite renders on GitHub (architecture · DB ERD · auth flow · CI/CD · VPS topology · git flow),
