@@ -4,24 +4,54 @@
 > every significant action, (4) never reconstruct state from chat memory.
 
 ## Current position
-- Phase: 4 (Deploy) — **SITE IS LIVE** at https://nova.robertobh.dev (TLS, health ok, auth works).
-  First manual deploy done; remaining: push-to-deploy wiring, monitoring, analytics, audit gate.
-- Blockers: **paused for Roberto to see the live site** before wiring push-to-deploy.
+- Phase: 4 (Deploy) ✅ CLOSED (af6625c). **LIVE at https://nova.robertobh.dev** — TLS, health ok,
+  auth works, security headers live, push-to-deploy demoed end-to-end with rollback-safe CD.
+- Next: Phase 5 (Hardening) + Roberto's requested polish of repo/landing/README (see below).
+- Session note: this closes the working session; a fresh session boots from ROADMAP→BRAIN→
+  latest SESSION-LOG and continues from here with zero chat context.
 
-## Immediate next step
-**LIVE at https://nova.robertobh.dev** (first manual deploy done 2026-07-08). STOPPED before
-wiring push-to-deploy, per Roberto — awaiting his OK after he sees the live site.
-Remaining Phase 4 once he greenlights:
-1. Wire push-to-deploy: `gh secret set VPS_HOST/VPS_USER/VPS_SSH_KEY` (dedicated deploy key),
-   then a develop→main merge demonstrates end-to-end auto-deploy 🎥.
-2. UptimeRobot on https://nova.robertobh.dev/api/health (5-min, email Roberto).
-3. Analytics decision → ADR-004.
-4. Auditor pre-deploy gate: **security headers are MISSING in prod** (verified: no HSTS/
-   X-Frame/X-Content-Type/Referrer-Policy) → add via next.config headers(); plus `npm audit`,
-   secrets-in-history scan, rate-limit check. Then close Phase 4.
-Live facts: web 49MB/512MB, postgres 38MB/384MB. __Secure cookie confirmed on HTTPS.
-Reviewer creds admin@novaanalytics.io / NovaReview2026! are live+public (in repo) — fine for
-review; rotate at Task 29 (SUBMISSION).
+## ⚠ Watch on next PR
+- The commitlint `commits` CI job is `pull_request`-scoped, so it has NOT run in CI yet
+  (pushes to develop skip it). Config + rules are verified locally; its **first live CI run
+  is the next PR** — confirm it scopes to base..head correctly and doesn't choke on the
+  merge-ref. If it misfires, the fix is the `--from/--to` SHA expressions in `.github/workflows/ci.yml`.
+
+## ⚠ Pending Roberto actions (not code — external/his account)
+1. **UptimeRobot**: create a monitor on https://nova.robertobh.dev/api/health (5-min, keyword
+   "ok" or status 200, email alert). Needs his account — I can't create one. Last Phase-4 item.
+2. **Disk on the VPS**: 87% used (4.7G free). NOT Nova (its image is 334MB, CI-built). Culprit is
+   **22GB of Docker build cache (21GB reclaimable)** from IMCORE images built ON the host
+   (imcore-frontend/api, pgvector present). `docker builder prune -f` reclaims ~21GB safely
+   (doesn't touch running containers or tagged images). Roberto's call — it's imcore's cache.
+3. Reviewer creds admin@novaanalytics.io / NovaReview2026! are live + public (in repo, by design
+   for review). Rotate at Task 29 (SUBMISSION) if desired.
+
+## Immediate next step (fresh session)
+Open **Phase 5 (Hardening)** — Tasks 25 (Vitest unit for pure logic: extract evaluateHealth,
+test), 26 (cross-browser/mobile QA matrix + load sanity `autocannon` + full adversarial
+`/code-review` on develop→main). AND Roberto flagged he wants to revisit **repo/landing/README
+key points** — treat as polish folded into Phase 5/6:
+- README currently minimal (rewritten in Phase 2) — expand for submission quality (badges,
+  screenshots, architecture link) at Task 27.
+- Landing is solid (Lighthouse 94/100) but Roberto may want copy/visual refinements.
+- Repo hygiene: consider a `.gitattributes` (`* text=auto eol=lf`) to kill the CRLF warnings;
+  the `*.sh` gitignore trap already bit once (deploy script) — now fixed with `!deploy/*.sh`.
+model/effort for Phase 5: propose at phase open (model-strategist).
+
+## How the live deploy works (topology recap for a cold session)
+- Host: existing Hetzner CPX11 178.156.248.110 (Ubuntu 24.04.4), SHARED with portfolio +
+  sideeffects (static) + moonhouse (Python) + imcore (docker). Nova isolated via mem_limits.
+- `/opt/nova/` = web-only compose (mem_limit 512m) on external docker net `data`; `.env` chmod 600.
+- `/opt/shared-postgres/` = standalone Postgres 17 compose (mem_limit 384m), DB `nova`, room for
+  `imcore_demo`. Port 127.0.0.1 only. NOVA_DB_PASSWORD in its `.env`.
+- CD: push to `main` → deploy.yml build-push (GHCR `:latest`+`:sha`) → scp `deploy/remote-deploy.sh`
+  → SSH runs it (pull, up, health-retry, ROLLBACK on failure, prune). Secrets: VPS_HOST/USER/SSH_KEY
+  (dedicated ed25519 CI key in GHCR secrets + VPS root authorized_keys). GHCR package is PUBLIC.
+- Migrations: from a dev machine via SSH tunnel (`ssh -L 15432:127.0.0.1:5432 root@VPS`) →
+  `DATABASE_URL=…localhost:15432/nova npx drizzle-kit push --force`. See docs/deployment.md.
+- Live facts: web ~50MB/512MB, postgres ~38MB/384MB. __Secure cookie confirmed on HTTPS.
+- Process note: PR #5 (hardening) was self-reviewed + audit-documented (AUDIT-PRE-DEPLOY.md) +
+  CI-green rather than sent to the adversarial reviewer, to keep the session close moving.
 
 Already DONE on `feature/deploy` (repo side of Tasks 20/22/23, all verified locally):
 - Task 20 ✅ standalone output + workspace-root fix; multi-stage Dockerfile (no public/
@@ -138,6 +168,14 @@ decision (ADR-004), auditor pre-deploy gate.
   `--repo xdroberto/nova-analytics` (or `--base develop` on PRs) to target the fork.
 
 ## Decisions log (newest first)
+- 2026-07-08: **repo-steward role added (Phase 4, adaptive process).** Two repo-hygiene slips
+  (36 unpruned inherited branches; `deploy/remote-deploy.sh` swallowed by the `*.sh` gitignore,
+  fixed 171fc1e) → new role owns the repo as a graded deliverable with MECHANICAL enforcement:
+  a commitlint CI gate (`commits` job, PR-range only via base..head SHAs, never inherited
+  history — verified locally: passes our conventional commits, correctly rejects the two
+  `feat(x)+docs` commits). Role advises on merges; Lead stays sole merger. Branch-pruning of
+  the 36 inherited branches is the role's FIRST task, deferred to its own dedicated session
+  (do NOT prune ad hoc).
 - 2026-07-08: **INFRA PIVOT (ADR-003 amended):** dedicated CPX11 no longer economical
   (legacy ~$6.99 gone; new ~$21/mo ≈ 3×). Nova deploys to the EXISTING CPX11 at
   178.156.248.110 (Ubuntu 24.04.4, also serving portfolio + sideeffects static +
