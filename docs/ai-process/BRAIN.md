@@ -10,6 +10,12 @@
 - Session note: this closes the working session; a fresh session boots from ROADMAP→BRAIN→
   latest SESSION-LOG and continues from here with zero chat context.
 
+## ⚠ Watch on next PR
+- The commitlint `commits` CI job is `pull_request`-scoped, so it has NOT run in CI yet
+  (pushes to develop skip it). Config + rules are verified locally; its **first live CI run
+  is the next PR** — confirm it scopes to base..head correctly and doesn't choke on the
+  merge-ref. If it misfires, the fix is the `--from/--to` SHA expressions in `.github/workflows/ci.yml`.
+
 ## ⚠ Pending Roberto actions (not code — external/his account)
 1. **UptimeRobot**: create a monitor on https://nova.robertobh.dev/api/health (5-min, keyword
    "ok" or status 200, email alert). Needs his account — I can't create one. Last Phase-4 item.
