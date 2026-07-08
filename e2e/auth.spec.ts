@@ -19,6 +19,13 @@ test("signup → dashboard → logout → login", async ({ page }) => {
   await page.getByRole("menuitem", { name: /log ?out/i }).click();
   await expect(page).toHaveURL(/login/, { timeout: 15_000 });
 
+  // Regression: after logout, pressing Back must not restore the dashboard. A
+  // soft-nav (router.push) logout left the SPA + client Router Cache alive, so a
+  // logged-out user could view AND interact with cached pages; a hard-nav logout
+  // + the BfcacheGuard send Back to /login instead.
+  await page.goBack();
+  await expect(page, "Back after logout must not restore the dashboard").toHaveURL(/login/, { timeout: 15_000 });
+
   await page.getByLabel(/email address/i).fill(email);
   await page.getByLabel(/^password$/i).fill(password);
   await page.getByRole("button", { name: /^login$/i }).click();
