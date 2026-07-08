@@ -33,7 +33,7 @@ export const infrastructureGroups: InfrastructureGroup[] = [
     organization: "Nova Analytics",
     rows: [
       {
-        domain: "nova.robertobh.dev/dashboard",
+        domain: "app.novaanalytics.io/dashboard",
         platform: {
           name: "Next.js",
           icon: siNextdotjs,
@@ -51,10 +51,10 @@ export const infrastructureGroups: InfrastructureGroup[] = [
   },
   {
     name: "Analytics",
-    organization: "Aiy Cap",
+    organization: "Nova Analytics",
     rows: [
       {
-        domain: "nova.robertobh.dev/analytics",
+        domain: "app.novaanalytics.io/analytics",
         platform: {
           name: "React",
           icon: siReact,
@@ -69,7 +69,7 @@ export const infrastructureGroups: InfrastructureGroup[] = [
         resources: { cpu: 49, ram: 42, disk: 44 },
       },
       {
-        domain: "nova.robertobh.dev/reports",
+        domain: "app.novaanalytics.io/reports",
         platform: {
           name: "Remix",
           icon: siRemix,
@@ -87,10 +87,10 @@ export const infrastructureGroups: InfrastructureGroup[] = [
   },
   {
     name: "Kanban",
-    organization: "Storeframe",
+    organization: "Nova Analytics",
     rows: [
       {
-        domain: "nova.robertobh.dev/kanban",
+        domain: "docs.novaanalytics.io",
         platform: {
           name: "Node.js",
           icon: siNodedotjs,
@@ -108,7 +108,7 @@ export const infrastructureGroups: InfrastructureGroup[] = [
   },
   {
     name: "Inbox",
-    organization: "Acme Corp",
+    organization: "Nova Analytics",
     rows: [],
   },
 ];
