@@ -22,10 +22,13 @@
 ## ⚠ Pending Roberto actions (not code — external/his account)
 1. **UptimeRobot**: create a monitor on https://nova.robertobh.dev/api/health (5-min, keyword
    "ok" or status 200, email alert). Needs his account — I can't create one. Last Phase-4 item.
-2. **Disk on the VPS**: 87% used (4.7G free). NOT Nova (its image is 334MB, CI-built). Culprit is
-   **22GB of Docker build cache (21GB reclaimable)** from IMCORE images built ON the host
-   (imcore-frontend/api, pgvector present). `docker builder prune -f` reclaims ~21GB safely
-   (doesn't touch running containers or tagged images). Roberto's call — it's imcore's cache.
+2. **Disk on the VPS**: 38G disk, 87% used (4.7G free). **VERIFIED breakdown (2026-07-08):** culprit is
+   the **Docker build cache — 22.1GB total, 21.34GB private/reclaimable, 0 active** (188 entries), from
+   IMCORE's on-host builds ~2mo ago. **Dangling images: NONE (0B).** All 5 images active (nova 334MB CI ·
+   postgres:17 424MB · imcore-api 608MB · imcore-frontend 354MB · pgvector 612MB). Nova adds ~0 (CI/GHCR).
+   **Nothing live depends on the cache** — running svcs (nova-web-1, shared-postgres) use tagged images,
+   untouched by a prune. `docker builder prune -f` frees ~21–22GB → disk 87%→~35%; only cost is a slower
+   NEXT imcore build (no data/service loss). **Roberto's call — imcore's cache. Report-only this session.**
 3. Reviewer creds admin@novaanalytics.io / NovaReview2026! are live + public (in repo, by design
    for review). Rotate at Task 29 (SUBMISSION) if desired.
 
@@ -51,9 +54,13 @@ model/effort for Phase 5: propose at phase open (model-strategist).
   the verdict either way here; if adopted, add one line to README's stack section.
 - **Package-manager note (for ADR/limitations):** pnpm considered as a stricter client; deferred
   mid-trial (migration cost vs live review window). Registry supply-chain risk is client-agnostic anyway.
-- Also queued: `.gitattributes` (`* text=auto eol=lf`, CRLF); README submission polish (badges/
-  screenshots/architecture, Task 27); npm-audit verdict (6 moderate after commitlint deps — classify
-  runtime-reachable vs dev-only, fix only if trivial).
+- **npm-audit verdict (DONE 2026-07-08): 6 moderate, 0 runtime-exploitable for Nova.** (a) esbuild ≤0.24.2
+  → @esbuild-kit/* → drizzle-kit = DEV-only (migration tooling, absent from the prod image; advisory is
+  dev-server-only). (b) postcss <8.5.10 → next = in the prod tree but not runtime-exploitable (build-time
+  CSS tooling; the XSS needs untrusted CSS input, no such path in Nova). No trivial fix — `audit fix --force`
+  = breaking downgrades (next→9.3.3, drizzle-kit→0.18.1), rejected; both await upstream transitive bumps.
+  ACCEPT + monitor; optional Phase-5: npm `overrides` to force patched postcss/esbuild IF build+e2e stay green.
+- Also still queued: `.gitattributes` (`* text=auto eol=lf`, CRLF); README submission polish (Task 27).
 
 ## How the live deploy works (topology recap for a cold session)
 - Host: existing Hetzner CPX11 178.156.248.110 (Ubuntu 24.04.4), SHARED with portfolio +
