@@ -1,0 +1,33 @@
+/* Auth panel motion — animated aurora blobs (mesh background).
+ * Gated behind prefers-reduced-motion (static, fully composed, when reduced). */
+
+@keyframes authAurora1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(44px, 32px) scale(1.14);
+  }
+  66% {
+    transform: translate(-30px, 18px) scale(0.92);
+  }
+}
+@keyframes authAurora2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-52px, -34px) scale(1.18);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .auth-aurora-1 {
+    animation: authAurora1 20s ease-in-out infinite;
+  }
+  .auth-aurora-2 {
+    animation: authAurora2 25s ease-in-out infinite;
+  }
+}
