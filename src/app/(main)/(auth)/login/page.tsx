@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { Globe } from "lucide-react";
+import { Globe, Lock, Server, ShieldCheck } from "lucide-react";
 
 import { APP_CONFIG } from "@/config/app-config";
 
@@ -16,6 +16,18 @@ export default function Login() {
         </div>
         <div className="space-y-4">
           <LoginForm />
+        </div>
+
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-muted-foreground text-xs">
+          <span className="inline-flex items-center gap-1.5">
+            <ShieldCheck className="size-3.5" aria-hidden="true" /> SOC 2 Type II
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <Server className="size-3.5" aria-hidden="true" /> Self-hosted
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <Lock className="size-3.5" aria-hidden="true" /> Encrypted
+          </span>
         </div>
       </div>
 
