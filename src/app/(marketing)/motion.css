@@ -143,3 +143,21 @@
     animation: nvDot 0.4s backwards;
   }
 }
+
+/* On-scroll reveal for below-fold sections. Default is visible (reduced-motion
+ * safe + fallback for browsers without scroll-driven animations). Where both
+ * supported, elements fade up as they enter the viewport. */
+.nv-reveal-scroll {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .nv-reveal-scroll {
+      opacity: 0;
+      animation: nvReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
+}
